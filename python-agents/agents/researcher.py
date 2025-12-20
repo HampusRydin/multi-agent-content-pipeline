@@ -273,7 +273,7 @@ class ResearchAgent:
                 metrics
             )
         
-        print(f"✅ Research completed: {len(research_data.get('findings', []))} findings, {elapsed_time:.2f}s")
+        print(f"Research completed: {len(research_data.get('findings', []))} findings, {elapsed_time:.2f}s")
         
         state["research_data"] = research_data
         return state

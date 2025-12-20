@@ -279,7 +279,7 @@ Format the response as markdown with appropriate headings, subheadings, and para
         target_length = state.get("target_length", 1000)
         style = state.get("style", "professional")
         
-        print(f"✍️  Writing blog post draft for topic: {topic}")
+        print(f"Writing blog post draft for topic: {topic}")
         
         # Extract PRD from state
         prd = self._extract_prd(state)
@@ -301,7 +301,7 @@ Format the response as markdown with appropriate headings, subheadings, and para
         # Log to Supabase
         self._log_to_supabase(prd, draft_content, metrics)
         
-        print(f"✅ Blog post draft completed: {word_count} words, {elapsed_time:.2f}s")
+        print(f"Blog post draft completed: {word_count} words, {elapsed_time:.2f}s")
         
         state["draft_content"] = draft_content
         return state
@@ -325,7 +325,7 @@ Format the response as markdown with appropriate headings, subheadings, and para
         target_length = state.get("target_length", 1000)
         style = state.get("style", "professional")
         
-        print(f"✍️  Writing blog post draft for topic: {topic}")
+        print(f"Writing blog post draft for topic: {topic}")
         
         # Extract PRD from state
         prd = self._extract_prd(state)
@@ -355,7 +355,7 @@ Format the response as markdown with appropriate headings, subheadings, and para
                 metrics
             )
         
-        print(f"✅ Blog post draft completed: {word_count} words, {elapsed_time:.2f}s")
+        print(f"Blog post draft completed: {word_count} words, {elapsed_time:.2f}s")
         
         state["draft_content"] = draft_content
         return state

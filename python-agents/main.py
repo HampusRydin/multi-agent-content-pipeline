@@ -26,6 +26,7 @@ workflow = create_workflow_async()
 
 
 class ContentRequest(BaseModel):
+    prd: str  # Product Requirements Document
     topic: str
     target_length: Optional[int] = None
     style: Optional[str] = None
@@ -53,11 +54,13 @@ async def generate_content(request: ContentRequest):
     Generate content using the multi-agent pipeline.
     """
     try:
-        # Run the workflow with the provided topic
+        # Run the workflow with PRD and topic
         result = await workflow.ainvoke({
+            "prd": request.prd,
             "topic": request.topic,
-            "target_length": request.target_length,
-            "style": request.style or "professional"
+            "target_length": request.target_length or 1000,
+            "style": request.style or "professional",
+            "fact_check_iterations": 0  # Initialize iteration counter
         })
         
         return ContentResponse(
