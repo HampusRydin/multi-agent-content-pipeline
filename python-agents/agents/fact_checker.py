@@ -200,27 +200,56 @@ Respond in JSON format:
                     research_context += f"{i}. {finding.get('title', '')}\n"
                     research_context += f"   {finding.get('snippet', '')}\n\n"
         
+        # Check if we have research data to verify against
+        has_research = bool(research_context and research_context.strip() and len(research_data.get("findings", [])) > 0)
+        
         # Construct fact-checking prompt
-        prompt = f"""You are an expert fact-checker. Review the following blog post draft and verify all factual claims against the provided research data.
+        if has_research:
+            prompt = f"""You are an expert fact-checker. Review the following blog post draft and verify factual claims against the provided research data.
 
 Blog Post Draft:
 {draft_content}
 
+Research Data for Verification:
 {research_context}
 
 Please:
-1. Identify any factual claims, statistics, or statements in the draft
+1. Identify factual claims, statistics, or specific statements in the draft
 2. Verify each claim against the research data provided
-3. Flag any claims that cannot be verified or contradict the research
-4. Provide a corrected version of the content if issues are found
-5. Determine if the content passes fact-checking (all verifiable claims are accurate) or fails (unverified or incorrect claims exist)
+3. Only flag claims that CONTRADICT the research data or are clearly incorrect
+4. If research data is limited or unavailable for a claim, that's acceptable - only flag contradictions
+5. Provide a corrected version ONLY if there are actual contradictions or errors
+6. PASS if: all verifiable claims match research OR if claims are reasonable and don't contradict research
+7. FAIL only if: there are clear contradictions or factually incorrect statements
 
 Respond in JSON format:
 {{
     "status": "pass" or "fail",
-    "issues": ["list of issues found"],
-    "corrected_content": "corrected version of the content, or original if no changes needed",
+    "issues": ["list of actual contradictions or errors found"],
+    "corrected_content": "corrected version if issues found, otherwise original content",
     "verification_summary": "brief summary of what was checked"
+}}"""
+        else:
+            # No research data - be lenient, only check for obvious errors
+            prompt = f"""You are an expert fact-checker. Review the following blog post draft for obvious factual errors.
+
+Blog Post Draft:
+{draft_content}
+
+Note: Limited research data available for verification. Focus only on obvious factual errors or contradictions within the text itself.
+
+Please:
+1. Check for obvious factual errors or internal contradictions
+2. Verify the content is coherent and doesn't contradict itself
+3. PASS unless there are clear, obvious factual errors
+4. Be lenient - without research data, focus on internal consistency
+
+Respond in JSON format:
+{{
+    "status": "pass" or "fail",
+    "issues": ["list of obvious errors found, if any"],
+    "corrected_content": "corrected version if issues found, otherwise original content",
+    "verification_summary": "brief summary - note that limited research was available"
 }}"""
 
         try:

@@ -133,14 +133,18 @@ Please create a well-structured blog post draft that:
 Format the response as markdown with appropriate headings, subheadings, and paragraphs."""
 
         try:
+            # Calculate max_tokens: roughly 1.3 tokens per word for English text
+            # Add buffer for markdown formatting
+            estimated_tokens = int(target_length * 1.3) + 200  # Extra buffer for formatting
+            
             response = self.client.chat.completions.create(
                 model=os.getenv("LLM_MODEL", "gpt-4"),
                 messages=[
-                    {"role": "system", "content": "You are an expert technical writer who creates engaging, informative blog posts based on product requirements and research."},
+                    {"role": "system", "content": "You are an expert technical writer who creates comprehensive, detailed blog posts. Always meet the target word count exactly. Never abbreviate or summarize - write the full content."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
-                max_tokens=int(target_length * 1.5)  # Allow some buffer for tokens
+                max_tokens=estimated_tokens
             )
             
             draft_content = response.choices[0].message.content
@@ -181,33 +185,44 @@ Format the response as markdown with appropriate headings, subheadings, and para
         # Construct prompt
         prompt = f"""You are an expert blog post writer. Create a compelling blog post draft based on the following Product Requirements Document (PRD) and research findings.
 
-Topic: {topic}
-Target Length: Approximately {target_length} words
-Writing Style: {style}
+CRITICAL REQUIREMENTS:
+- Target length: EXACTLY {target_length} words (aim for {target_length} words, not less)
+- Writing style: {style}
+- Topic: {topic}
 
-PRD (Product Requirements Document):
+PRD (Product Requirements Document) - THIS IS YOUR PRIMARY SOURCE:
 {prd}
-{research_context}
+{research_context if research_context else "Note: Limited research data available. Focus on the PRD content."}
 
-Please create a well-structured blog post draft that:
-1. Has an engaging introduction that hooks the reader
-2. Clearly explains the product/feature based on the PRD
-3. Incorporates relevant information from the research findings
-4. Uses a {style} writing style
-5. Has a strong conclusion
-6. Is approximately {target_length} words
+Your blog post MUST:
+1. Start with a compelling introduction (100-150 words) that hooks the reader and introduces the topic
+2. Dedicate the main body (500-600 words) to explaining the product/feature in detail based on the PRD:
+   - What the product/feature is
+   - Key features and capabilities from the PRD
+   - How it works
+   - Who it's for (target audience from PRD)
+   - Benefits and value proposition
+3. Include relevant information from research findings if available
+4. End with a strong conclusion (100-150 words) that summarizes key points
+5. Use {style} writing style throughout
+6. Be EXACTLY around {target_length} words - this is critical
 
-Format the response as markdown with appropriate headings, subheadings, and paragraphs."""
+Format as markdown with clear headings (H2 for main sections, H3 for subsections) and well-structured paragraphs.
+Write the full blog post now - do not summarize or abbreviate."""
 
         try:
+            # Calculate max_tokens: roughly 1.3 tokens per word for English text
+            # Add buffer for markdown formatting
+            estimated_tokens = int(target_length * 1.3) + 200  # Extra buffer for formatting
+            
             response = await self.async_client.chat.completions.create(
                 model=os.getenv("LLM_MODEL", "gpt-4"),
                 messages=[
-                    {"role": "system", "content": "You are an expert technical writer who creates engaging, informative blog posts based on product requirements and research."},
+                    {"role": "system", "content": "You are an expert technical writer who creates comprehensive, detailed blog posts. Always meet the target word count exactly. Never abbreviate or summarize - write the full content."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
-                max_tokens=int(target_length * 1.5)
+                max_tokens=estimated_tokens
             )
             
             draft_content = response.choices[0].message.content
