@@ -5,7 +5,7 @@ from typing import Optional
 import os
 from dotenv import load_dotenv
 
-from graph import create_workflow
+from graph import create_workflow_async
 
 # Load environment variables
 load_dotenv()
@@ -21,8 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize the workflow
-workflow = create_workflow()
+# Initialize the async workflow
+workflow = create_workflow_async()
 
 
 class ContentRequest(BaseModel):
