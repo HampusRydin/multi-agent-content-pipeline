@@ -195,7 +195,7 @@ class ResearchAgent:
         if not topic:
             raise ValueError("Topic is required for research")
         
-        print(f"🔍 Researching topic: {topic}")
+        print(f"\033[94m[RESEARCH]\033[0m Researching topic: {topic}")
         
         # Perform SerpAPI search
         search_response = self._search_serpapi(topic, num_results=10)
@@ -216,7 +216,7 @@ class ResearchAgent:
         # Log to Supabase
         self._log_to_supabase(topic, research_data, metrics)
         
-        print(f"✅ Research completed: {len(research_data.get('findings', []))} findings, {elapsed_time:.2f}s")
+        print(f"\033[92m[SUCCESS]\033[0m Research completed: {len(research_data.get('findings', []))} findings, {elapsed_time:.2f}s")
         
         state["research_data"] = research_data
         return state
@@ -239,7 +239,7 @@ class ResearchAgent:
         if not topic:
             raise ValueError("Topic is required for research")
         
-        print(f"🔍 Researching topic: {topic}")
+        print(f"\033[94m[RESEARCH]\033[0m Researching topic: {topic}")
         
         # Run SerpAPI search in executor to avoid blocking
         loop = asyncio.get_event_loop()

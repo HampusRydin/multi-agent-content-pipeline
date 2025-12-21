@@ -399,8 +399,8 @@ Respond in JSON format:
         # Log to Supabase
         self._log_to_supabase(draft_content, fact_checked_content, status, metrics)
         
-        status_emoji = "✅" if status == "pass" else "❌"
-        print(f"{status_emoji} Fact-check {status}: {len(issues.get('issues', []))} issues found, {elapsed_time:.2f}s")
+        status_color = "\033[92m[PASS]\033[0m" if status == "pass" else "\033[91m[FAIL]\033[0m"
+        print(f"{status_color} Fact-check {status}: {len(issues.get('issues', []))} issues found, {elapsed_time:.2f}s")
         
         # Update state
         state["fact_checked_content"] = fact_checked_content
@@ -458,8 +458,8 @@ Respond in JSON format:
                 metrics
             )
         
-        status_emoji = "✅" if status == "pass" else "❌"
-        print(f"{status_emoji} Fact-check {status}: {len(issues.get('issues', []))} issues found, {elapsed_time:.2f}s")
+        status_color = "\033[92m[PASS]\033[0m" if status == "pass" else "\033[91m[FAIL]\033[0m"
+        print(f"{status_color} Fact-check {status}: {len(issues.get('issues', []))} issues found, {elapsed_time:.2f}s")
         
         # Update state
         state["fact_checked_content"] = fact_checked_content

@@ -196,15 +196,10 @@ python test_workflow.py
 
 ## Security Notes
 
-- Never commit `.env` files (already in `.gitignore`)
 - Use your own Supabase project - don't share credentials
 - For production, adjust RLS policies in Supabase
 - Consider using service role key for backend, anon key for frontend
 - Rotate API keys if they were ever exposed
-
-## Contributing
-
-Contributions are welcome! Feel free to open issues or submit pull requests.
 
 ## License
 

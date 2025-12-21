@@ -94,21 +94,21 @@ async def generate_content(request: ContentRequest):
                 response = supabase.table("posts").insert(post_entry).execute()
                 
                 if response.data:
-                    print(f"✅ Post saved to Supabase: {len(response.data)} record(s)")
+                    print(f"\033[92m[SUCCESS]\033[0m Post saved to Supabase: {len(response.data)} record(s)")
                     print(f"Saved post ID: {response.data[0].get('id', 'unknown')}")
                 else:
-                    print("⚠️  No data returned from Supabase insert")
+                    print("\033[93m[WARNING]\033[0m No data returned from Supabase insert")
                     print(f"Response: {response}")
                     # Check for RLS or permission errors
                     if hasattr(response, 'error') and response.error:
                         print(f"Supabase error: {response.error}")
             except Exception as e:
                 error_msg = str(e)
-                print(f"❌ Error saving post to Supabase: {error_msg}")
+                print(f"\033[91m[ERROR]\033[0m Error saving post to Supabase: {error_msg}")
                 
                 # Check for common Supabase errors
                 if "permission" in error_msg.lower() or "policy" in error_msg.lower() or "rls" in error_msg.lower():
-                    print("\n⚠️  This looks like a Row Level Security (RLS) issue.")
+                    print("\n\033[93m[WARNING]\033[0m This looks like a Row Level Security (RLS) issue.")
                     print("   Check your Supabase table policies:")
                     print("   1. Go to Supabase Dashboard > Table Editor > posts")
                     print("   2. Click 'Policies' tab")

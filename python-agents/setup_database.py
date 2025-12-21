@@ -79,22 +79,22 @@ def setup_database():
     try:
         supabase: Optional[Client] = create_client(supabase_url, supabase_key)
         
-        print("🔍 Checking if tables exist...")
+        print("\033[94m[INFO]\033[0m Checking if tables exist...")
         
         # Try to query agent_logs table
         try:
             result = supabase.table("agent_logs").select("id").limit(1).execute()
-            print("agent_logs table exists")
+            print("\033[92m[SUCCESS]\033[0m agent_logs table exists")
         except Exception as e:
-            print(f"agent_logs table not found: {str(e)}")
+            print(f"\033[91m[ERROR]\033[0m agent_logs table not found: {str(e)}")
             print("Run migrations/001_create_agent_logs.sql")
         
         # Try to query posts table
         try:
             result = supabase.table("posts").select("id").limit(1).execute()
-            print("posts table exists")
+            print("\033[92m[SUCCESS]\033[0m posts table exists")
         except Exception as e:
-            print(f"posts table not found: {str(e)}")
+            print(f"\033[91m[ERROR]\033[0m posts table not found: {str(e)}")
             print("Run migrations/002_create_posts.sql")
         
         print("\n" + "=" * 60)
