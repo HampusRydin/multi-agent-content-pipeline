@@ -89,7 +89,7 @@ pip install fastapi uvicorn langgraph openai supabase serpapi python-dotenv
 
 ### 4. Configure Environment Variables
 
-Create `python-agents/.env`:
+**Create a single `.env` file at the project root** (same directory as `python-agents/` and `nextjs-app/`):
 
 ```env
 # API Keys
@@ -103,7 +103,12 @@ SUPABASE_KEY=your_supabase_service_role_key_here
 # LLM Configuration
 LLM_MODEL=gpt-4
 LLM_TEMPERATURE=0.7
+
+# FastAPI Backend URL (for Next.js)
+FASTAPI_URL=http://localhost:8000
 ```
+
+**Note**: Both Python and Next.js will automatically load from this root `.env` file. You don't need separate `.env` files!
 
 ### 5. Set Up Next.js Frontend
 
@@ -112,9 +117,6 @@ cd nextjs-app
 
 # Install dependencies
 npm install
-
-# Create .env.local
-echo "FASTAPI_URL=http://localhost:8000" > .env.local
 ```
 
 ## Running the Application

@@ -3,7 +3,6 @@ import os
 import json
 import time
 from datetime import datetime
-from dotenv import load_dotenv
 
 try:
     from openai import OpenAI
@@ -14,7 +13,9 @@ except ImportError:
 
 from supabase import create_client, Client
 
-load_dotenv()
+from load_env import load_environment
+
+load_environment()
 
 
 class PolisherAgent:

@@ -2,11 +2,12 @@ from typing import Dict, Any, List, Optional
 import os
 import json
 from datetime import datetime
-from dotenv import load_dotenv
 import serpapi
 from supabase import create_client, Client
 
-load_dotenv()
+from load_env import load_environment
+
+load_environment()
 
 
 class ResearchAgent:

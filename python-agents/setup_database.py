@@ -3,11 +3,12 @@ Database setup script to create required tables in Supabase.
 Run this script once to set up your database schema.
 """
 import os
-from dotenv import load_dotenv
 from supabase import create_client, Client
 from typing import Optional
 
-load_dotenv()
+from load_env import load_environment
+
+load_environment()
 
 
 def run_sql_file(supabase: Client, file_path: str) -> bool:

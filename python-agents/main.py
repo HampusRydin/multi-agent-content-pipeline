@@ -3,13 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 import os
-from dotenv import load_dotenv
 from supabase import create_client, Client
 
 from graph import create_workflow_async
+from load_env import load_environment
 
-# Load environment variables
-load_dotenv()
+# Load environment variables (from root .env or local .env)
+load_environment()
 
 app = FastAPI(title="Multi-Agent Content Pipeline API")
 
