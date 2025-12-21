@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import Optional
 import os
 from dotenv import load_dotenv
+from supabase import create_client, Client
 
 from graph import create_workflow_async
 
@@ -11,6 +12,15 @@ from graph import create_workflow_async
 load_dotenv()
 
 app = FastAPI(title="Multi-Agent Content Pipeline API")
+
+# Initialize Supabase client for posts table
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
+supabase: Optional[Client] = None
+if supabase_url and supabase_key:
+    supabase = create_client(supabase_url, supabase_key)
+else:
+    print("Warning: Supabase credentials not found. Posts will not be saved.")
 
 # Configure CORS
 app.add_middleware(
@@ -63,8 +73,54 @@ async def generate_content(request: ContentRequest):
             "fact_check_iterations": 0  # Initialize iteration counter
         })
         
+        final_content = result.get("final_content", "")
+        
+        # Save to posts table in Supabase
+        print(f"Attempting to save post to Supabase...")
+        print(f"Supabase client initialized: {supabase is not None}")
+        print(f"Final content length: {len(final_content) if final_content else 0}")
+        
+        if not supabase:
+            print("Warning: Supabase client not initialized. Check SUPABASE_URL and SUPABASE_KEY in .env")
+        elif not final_content or final_content.strip() == "":
+            print("Warning: Final content is empty, skipping post save")
+        else:
+            try:
+                post_entry = {
+                    "prd": request.prd,
+                    "final_post": final_content
+                }
+                print(f"Saving post entry (PRD length: {len(request.prd)}, Post length: {len(final_content)})...")
+                response = supabase.table("posts").insert(post_entry).execute()
+                
+                if response.data:
+                    print(f"✅ Post saved to Supabase: {len(response.data)} record(s)")
+                    print(f"Saved post ID: {response.data[0].get('id', 'unknown')}")
+                else:
+                    print("⚠️  No data returned from Supabase insert")
+                    print(f"Response: {response}")
+                    # Check for RLS or permission errors
+                    if hasattr(response, 'error') and response.error:
+                        print(f"Supabase error: {response.error}")
+            except Exception as e:
+                error_msg = str(e)
+                print(f"❌ Error saving post to Supabase: {error_msg}")
+                
+                # Check for common Supabase errors
+                if "permission" in error_msg.lower() or "policy" in error_msg.lower() or "rls" in error_msg.lower():
+                    print("\n⚠️  This looks like a Row Level Security (RLS) issue.")
+                    print("   Check your Supabase table policies:")
+                    print("   1. Go to Supabase Dashboard > Table Editor > posts")
+                    print("   2. Click 'Policies' tab")
+                    print("   3. Ensure INSERT policy allows your service role key")
+                    print("   4. Or disable RLS temporarily for testing")
+                
+                import traceback
+                traceback.print_exc()
+                # Don't fail the request if saving fails
+        
         return ContentResponse(
-            content=result.get("final_content", ""),
+            content=final_content,
             status="success",
             metadata=result.get("metadata", {})
         )
