@@ -70,9 +70,10 @@ def setup_database():
     print("1. Go to your Supabase Dashboard")
     print("2. Navigate to: SQL Editor (left sidebar)")
     print("3. Click 'New query'")
-    print("4. Copy and paste the contents of the following files:")
+    print("4. Copy and paste the contents of the following files IN ORDER:")
     print("   - migrations/001_create_agent_logs.sql")
     print("   - migrations/002_create_posts.sql")
+    print("   - migrations/003_add_post_id_to_agent_logs.sql")
     print("5. Run each SQL file in the SQL Editor")
     print("6. Verify tables were created in Table Editor\n")
     
@@ -97,6 +98,17 @@ def setup_database():
         except Exception as e:
             print(f"\033[91m[ERROR]\033[0m posts table not found: {str(e)}")
             print("Run migrations/002_create_posts.sql")
+        
+        # Check if post_id column exists in agent_logs
+        try:
+            result = supabase.table("agent_logs").select("post_id").limit(1).execute()
+            print("\033[92m[SUCCESS]\033[0m post_id column exists in agent_logs")
+        except Exception as e:
+            if "post_id" in str(e).lower() or "column" in str(e).lower():
+                print(f"\033[91m[ERROR]\033[0m post_id column not found in agent_logs: {str(e)}")
+                print("Run migrations/003_add_post_id_to_agent_logs.sql")
+            else:
+                print(f"\033[93m[WARNING]\033[0m Could not verify post_id column: {str(e)}")
         
         print("\n" + "=" * 60)
         print("Setup complete! Your database is ready.")

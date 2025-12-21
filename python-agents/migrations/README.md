@@ -46,6 +46,16 @@ Creates the `posts` table for storing final blog posts.
 - `prd` (TEXT) - Product Requirements Document
 - `final_post` (TEXT) - Final polished blog post
 
+### 003_add_post_id_to_agent_logs.sql
+Adds `post_id` column to `agent_logs` table to link logs to posts.
+
+**What it does:**
+- Adds nullable `post_id` (BIGINT) column to `agent_logs`
+- Creates index on `post_id` for faster queries
+- Allows proper tracking of which logs belong to which post
+
+**Important:** Run this migration after `001_create_agent_logs.sql` and `002_create_posts.sql`.
+
 ## Row Level Security (RLS)
 
 Both tables have RLS enabled with policies that allow:

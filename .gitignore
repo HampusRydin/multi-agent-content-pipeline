@@ -25,6 +25,9 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Test files
-test_workflow.py
-visualize_workflow.py
+# Node modules
+node_modules/
+
+# Next.js
+.next/
+out/

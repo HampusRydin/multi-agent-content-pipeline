@@ -1,8 +1,8 @@
 # Multi-Agent Content Pipeline
 
-A LangGraph-powered multi-agent system for generating high-quality blog posts from Product Requirements Documents (PRDs).
+A LangGraph-powered multi-agent system for generating high-quality blog posts from Product Requirements Documents (PRDs). Features automated research, writing, fact-checking, and style polishing with a beautiful timeline visualization.
 
-## Features
+## ✨ Features
 
 - 🔍 **Research Agent**: Automated web research using SerpAPI
 - ✍️ **Writer Agent**: Generates blog post drafts from PRDs
@@ -10,137 +10,163 @@ A LangGraph-powered multi-agent system for generating high-quality blog posts fr
 - ✨ **Polisher Agent**: Refines content for style and quality
 - 📊 **Supabase Logging**: Tracks all agent executions and metrics
 - 🔄 **LangGraph Workflow**: Orchestrates multi-agent pipeline with conditional routing
+- 📈 **Timeline Visualization**: Beautiful UI to view the complete generation process
 
-## Architecture
+## 🏗️ Architecture
 
-- **Frontend**: Next.js (TypeScript/React)
-- **Backend**: FastAPI (Python)
-- **Workflow**: LangGraph
-- **Database**: Supabase (PostgreSQL)
-- **Research**: SerpAPI
-- **LLM**: OpenAI
+- **Frontend**: Next.js 16 (TypeScript/React) with Tailwind CSS
+- **Backend**: FastAPI (Python) with async support
+- **Workflow**: LangGraph for multi-agent orchestration
+- **Database**: Supabase (PostgreSQL) for logging and storage
+- **Research**: SerpAPI for web search
+- **LLM**: OpenAI GPT models
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 multi-agent-content-pipeline/
-├── nextjs-app/          # Next.js frontend
-│   ├── app/
-│   ├── components/
-│   └── ...
-├── python-agents/       # Python backend with agents
-│   ├── agents/
+├── .env                    # Environment variables (create from .env.example)
+├── .env.example            # Example environment file
+├── python-agents/          # Python backend
+│   ├── agents/             # Agent implementations
 │   │   ├── researcher.py
 │   │   ├── writer.py
 │   │   ├── fact_checker.py
 │   │   └── polisher.py
-│   ├── migrations/     # Database migration files
-│   ├── main.py         # FastAPI server
-│   └── graph.py        # LangGraph workflow
+│   ├── migrations/        # Database migration SQL files
+│   ├── main.py            # FastAPI server
+│   ├── graph.py           # LangGraph workflow
+│   ├── load_env.py        # Environment loader
+│   ├── requirements.txt   # Python dependencies
+│   └── test_workflow.py   # Test script
+├── nextjs-app/            # Next.js frontend
+│   ├── app/
+│   │   ├── api/          # API routes
+│   │   ├── generate/    # Generate page
+│   │   ├── posts/       # Posts list page
+│   │   └── timeline/    # Timeline visualization
+│   └── package.json
 └── README.md
 ```
 
-## Prerequisites
+## 🚀 Quick Start
 
-- Python 3.9+ 
-- Node.js 18+ and npm
-- OpenAI API key
-- SerpAPI key (for research functionality)
-- Supabase account (free tier works)
+**New to the project?** Check out [QUICKSTART.md](QUICKSTART.md) for a 5-minute setup guide!
 
-## Setup
+### Prerequisites
 
-### 1. Clone the Repository
+- **Python 3.9+**
+- **Node.js 18+** and npm
+- **OpenAI API key** ([Get one here](https://platform.openai.com/api-keys))
+- **SerpAPI key** ([Get one here](https://serpapi.com/dashboard))
+- **Supabase account** ([Free tier works](https://supabase.com))
+
+### Automated Setup
+
+Run the setup script for a guided setup:
+
+```bash
+chmod +x SETUP.sh
+./SETUP.sh
+```
+
+### Manual Setup
+
+### Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/HampusRydin/multi-agent-content-pipeline.git
 cd multi-agent-content-pipeline
 ```
 
-### 2. Set Up Python Backend
+### Step 2: Set Up Environment Variables
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit `.env` and fill in your API keys:
+   ```env
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_KEY=your_supabase_service_role_key
+   OPENAI_API_KEY=your_openai_api_key
+   SERPAPI_API_KEY=your_serpapi_api_key
+   LLM_MODEL=gpt-4o-mini
+   LLM_TEMPERATURE=0.7
+   FASTAPI_URL=http://localhost:8000
+   ```
+
+**Note:** Both Python and Next.js automatically load from this single root `.env` file!
+
+### Step 3: Set Up Supabase Database
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to **SQL Editor** in your Supabase Dashboard
+3. Run these migration files **in order**:
+   - `python-agents/migrations/001_create_agent_logs.sql`
+   - `python-agents/migrations/002_create_posts.sql`
+   - `python-agents/migrations/003_add_post_id_to_agent_logs.sql`
+
+4. Verify tables were created in **Table Editor**
+
+**Alternative:** Run the setup script for instructions:
+```bash
+cd python-agents
+python setup_database.py
+```
+
+### Step 4: Install Python Dependencies
 
 ```bash
 cd python-agents
 
 # Create virtual environment
 python -m venv venv
+
+# Activate it
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-
-# Or install manually:
-pip install fastapi uvicorn langgraph openai supabase serpapi python-dotenv
 ```
 
-### 3. Set Up Supabase Database
-
-**Important**: Create your own Supabase project at https://supabase.com
-
-1. Create a new Supabase project
-2. Go to **SQL Editor** in your Supabase Dashboard
-3. Run the migration files in order:
-   - `python-agents/migrations/001_create_agent_logs.sql`
-   - `python-agents/migrations/002_create_posts.sql`
-4. Or run the setup script:
-   ```bash
-   python setup_database.py
-   ```
-
-### 4. Configure Environment Variables
-
-**Create a single `.env` file at the project root** (same directory as `python-agents/` and `nextjs-app/`):
-
-```env
-# API Keys
-OPENAI_API_KEY=your_openai_api_key_here
-SERPAPI_API_KEY=your_serpapi_api_key_here
-
-# Supabase Configuration
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your_supabase_service_role_key_here
-
-# LLM Configuration
-LLM_MODEL=gpt-4
-LLM_TEMPERATURE=0.7
-
-# FastAPI Backend URL (for Next.js)
-FASTAPI_URL=http://localhost:8000
-```
-
-**Note**: Both Python and Next.js will automatically load from this root `.env` file. You don't need separate `.env` files!
-
-### 5. Set Up Next.js Frontend
+### Step 5: Install Next.js Dependencies
 
 ```bash
-cd nextjs-app
-
-# Install dependencies
+cd ../nextjs-app
 npm install
 ```
 
-## Running the Application
+### Step 6: Start the Application
 
-### Start the Python Backend
-
+**Terminal 1 - Start Python Backend:**
 ```bash
 cd python-agents
 source venv/bin/activate
 python main.py
 ```
 
-The API will be available at `http://localhost:8000`
+You should see: `INFO: Uvicorn running on http://0.0.0.0:8000`
 
-### Start the Next.js Frontend
-
+**Terminal 2 - Start Next.js Frontend:**
 ```bash
 cd nextjs-app
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:3000`
+You should see: `Ready - started server on 0.0.0.0:3000`
 
-## Workflow
+### Step 7: Use the Application
+
+1. Open [http://localhost:3000](http://localhost:3000)
+2. Click **"Generate Content"**
+3. Enter your PRD and topic
+4. Click **"Generate Blog Post"**
+5. Wait for generation (2-5 minutes)
+6. View the timeline to see the complete process!
+
+## 🔄 Workflow
 
 The pipeline follows this flow:
 
@@ -148,21 +174,45 @@ The pipeline follows this flow:
 PRD → Researcher → Writer → Fact-Checker → (pass: Polisher, fail: Writer) → Final Blog Post
 ```
 
-1. **Researcher**: Uses SerpAPI to research the topic
-2. **Writer**: Creates blog post draft from PRD and research
-3. **Fact-Checker**: Verifies claims against research (loops back to writer if fails)
-4. **Polisher**: Refines and polishes the final content
+1. **Researcher**: Uses SerpAPI to research the topic and gather information
+2. **Writer**: Creates blog post draft from PRD and research data
+3. **Fact-Checker**: Verifies claims against research (loops back to writer if fails, max 3 iterations)
+4. **Polisher**: Refines and polishes the final content for publication
 
-## Testing
+## 📊 Database Schema
 
-Run the test script to test the workflow:
+### `agent_logs` Table
+- `id` (BIGSERIAL, PRIMARY KEY)
+- `agent` (TEXT) - Agent name (researcher, writer, fact_checker, polisher)
+- `input` (TEXT) - Agent input
+- `output` (TEXT) - Agent output
+- `timestamp` (TIMESTAMPTZ) - When the log was created
+- `metadata` (JSONB) - Additional metrics and data
+- `post_id` (BIGINT) - Links logs to posts
+
+### `posts` Table
+- `id` (BIGSERIAL, PRIMARY KEY)
+- `prd` (TEXT) - Product Requirements Document
+- `final_post` (TEXT) - Final polished blog post
+
+## 🧪 Testing
+
+Test the workflow programmatically:
 
 ```bash
 cd python-agents
+source venv/bin/activate
 python test_workflow.py
 ```
 
-## API Endpoints
+Or use the helper script:
+```bash
+./run_test.sh
+```
+
+## 🔌 API Endpoints
+
+### FastAPI Backend (`http://localhost:8000`)
 
 - `GET /` - API info
 - `GET /health` - Health check
@@ -176,34 +226,111 @@ python test_workflow.py
   }
   ```
 
-## Database Tables
+### Next.js API Routes (`http://localhost:3000/api`)
 
-- **agent_logs**: Logs all agent executions with inputs, outputs, and metrics
-- **posts**: Stores final blog posts with their PRDs
+- `GET /api/posts` - List all posts
+- `GET /api/timeline/[postId]` - Get timeline for a post
+- `POST /api/generate` - Generate content (proxies to FastAPI)
 
-## Troubleshooting
+## 🎨 Frontend Pages
+
+- `/` - Home page with navigation
+- `/generate` - Generate new blog post form
+- `/posts` - List all generated posts
+- `/timeline/[postId]` - Visual timeline of generation process
+
+## 🛠️ Troubleshooting
 
 ### Database Issues
-- **No entries in `posts` table**: Check RLS policies in Supabase. The migrations include policies, but verify they're active.
-- **Agent logs not appearing**: Ensure `SUPABASE_URL` and `SUPABASE_KEY` are set correctly in `.env`
+
+**No entries in `posts` table:**
+- Check RLS policies in Supabase Dashboard → Table Editor → Policies
+- Ensure INSERT policy allows your service role key
+- Or temporarily disable RLS for testing
+
+**Agent logs not appearing in timeline:**
+- Verify `post_id` column exists: Run `python verify_migration.py`
+- Check that logs have `post_id` set: Run `python check_logs.py`
+- Ensure you're viewing a post created after running migration 003
 
 ### API Issues
-- **401 Unauthorized from SerpAPI**: Verify your `SERPAPI_API_KEY` is correct
-- **OpenAI errors**: Check your `OPENAI_API_KEY` and ensure you have sufficient credits
-- **Fact-checker always fails**: This may indicate insufficient research data or overly strict checking
+
+**401 Unauthorized from SerpAPI:**
+- Verify your `SERPAPI_API_KEY` is correct in `.env`
+- Check your SerpAPI account has credits
+
+**OpenAI errors:**
+- Verify `OPENAI_API_KEY` is correct
+- Check you have sufficient API credits
+- Verify `LLM_MODEL` is a valid model name
+
+**FastAPI server not starting:**
+- Ensure virtual environment is activated
+- Check all dependencies are installed: `pip install -r requirements.txt`
+- Verify `.env` file exists in project root
+
+**Next.js can't connect to FastAPI:**
+- Ensure FastAPI server is running on port 8000
+- Check `FASTAPI_URL` in `.env` matches your FastAPI server URL
+- Verify CORS is enabled in FastAPI (it is by default)
 
 ### Workflow Issues
-- **Content too short**: Adjust `target_length` parameter or check writer agent prompts
-- **Infinite loops**: The fact-checker has a max iteration limit (3) to prevent infinite loops
 
-## Security Notes
+**Content too short:**
+- Increase `target_length` parameter
+- Check writer agent is receiving proper PRD
 
+**Fact-checker always fails:**
+- May indicate insufficient research data
+- Check SerpAPI is returning results
+- Review fact-checker logs in Supabase
+
+**Infinite loops:**
+- The fact-checker has a max iteration limit (3) to prevent infinite loops
+- After 3 failures, workflow proceeds to polish anyway
+
+## 📝 Development
+
+### Project Scripts
+
+**Python:**
+- `python main.py` - Start FastAPI server
+- `python test_workflow.py` - Test workflow
+- `python setup_database.py` - Database setup helper
+- `python check_logs.py` - Debug agent logs
+- `python verify_migration.py` - Verify migrations
+
+**Next.js:**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+
+### Code Structure
+
+- **Agents** (`python-agents/agents/`): Each agent is a class with `run()` and `run_async()` methods
+- **Workflow** (`python-agents/graph.py`): Defines the LangGraph workflow and state
+- **API** (`python-agents/main.py`): FastAPI endpoints
+- **Frontend** (`nextjs-app/app/`): Next.js App Router pages and API routes
+
+## 🔒 Security Notes
+
+- **Never commit `.env` files** - They're in `.gitignore`
 - Use your own Supabase project - don't share credentials
 - For production, adjust RLS policies in Supabase
 - Consider using service role key for backend, anon key for frontend
 - Rotate API keys if they were ever exposed
 
-## License
+## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
+## 🤝 Contributing
+
+Contributions welcome! Please feel free to submit a Pull Request.
+
+## 📚 Additional Resources
+
+- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
+- [Supabase Documentation](https://supabase.com/docs)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
