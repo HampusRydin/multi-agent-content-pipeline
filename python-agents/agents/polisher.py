@@ -70,24 +70,24 @@ Target Length: Approximately {target_length} words
 Blog Post to Polish:
 {content}
 
-Please:
-1. Improve readability and flow
-2. Enhance the {style} writing style and tone
-3. Fix any grammar, spelling, or punctuation errors
-4. Optimize sentence structure and paragraph flow
-5. Ensure the content meets the target length ({target_length} words)
-6. Make the introduction more engaging if needed
-7. Strengthen the conclusion
-8. Ensure consistent formatting and markdown structure
-9. Maintain all factual content - only improve presentation
+Instructions (DO NOT include these in your response):
+- Improve readability and flow
+- Enhance the {style} writing style and tone
+- Fix any grammar, spelling, or punctuation errors
+- Optimize sentence structure and paragraph flow
+- Ensure the content meets the target length ({target_length} words)
+- Make the introduction more engaging if needed
+- Strengthen the conclusion
+- Ensure consistent formatting and markdown structure
+- Maintain all factual content - only improve presentation
 
-Return the polished version of the blog post. Keep the same markdown structure and headings."""
+IMPORTANT: Return ONLY the polished blog post content. Do NOT include any instructions, explanations, or meta-commentary. Keep the same markdown structure and headings."""
 
         try:
             response = self.client.chat.completions.create(
                 model=os.getenv("LLM_MODEL", "gpt-4"),
                 messages=[
-                    {"role": "system", "content": "You are an expert editor who polishes content to publication quality while maintaining accuracy and factual information."},
+                    {"role": "system", "content": "You are an expert editor who polishes content to publication quality while maintaining accuracy and factual information. Return ONLY the polished content - never include instructions, explanations, or meta-commentary in your response."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
@@ -95,7 +95,49 @@ Return the polished version of the blog post. Keep the same markdown structure a
             )
             
             polished_content = response.choices[0].message.content
-            return polished_content.strip()
+            
+            # Remove any instruction-like text that might appear at the end
+            # Look for common patterns like "Please:", numbered lists of instructions, etc.
+            lines = polished_content.split('\n')
+            cleaned_lines = []
+            skip_rest = False
+            
+            # Instruction markers that indicate we should stop
+            instruction_markers = [
+                'please:',
+                'instructions:',
+                'return the polished',
+                'do not include',
+                'improve readability',
+                'enhance the',
+                'fix any grammar',
+                'optimize sentence',
+                'ensure the content',
+                'make the introduction',
+                'strengthen the conclusion',
+                'ensure consistent formatting',
+                'maintain all factual'
+            ]
+            
+            for i, line in enumerate(lines):
+                line_stripped = line.strip()
+                line_lower = line_stripped.lower()
+                
+                # Check if this line looks like the start of instructions
+                # (usually "Please:" or a numbered list starting with "1.")
+                if (line_lower.startswith('please:') or 
+                    (line_lower.startswith('1.') and any(marker in line_lower for marker in instruction_markers)) or
+                    (i > len(lines) * 0.7 and any(marker in line_lower for marker in instruction_markers[:3]))):
+                    # Only remove if it's in the last 30% of content (likely instructions)
+                    if i > len(lines) * 0.7:
+                        skip_rest = True
+                        break
+                
+                if not skip_rest:
+                    cleaned_lines.append(line)
+            
+            polished_content = '\n'.join(cleaned_lines).strip()
+            return polished_content
         except Exception as e:
             print(f"Error polishing content: {str(e)}")
             # Return original content on error
@@ -125,24 +167,24 @@ Target Length: Approximately {target_length} words
 Blog Post to Polish:
 {content}
 
-Please:
-1. Improve readability and flow
-2. Enhance the {style} writing style and tone
-3. Fix any grammar, spelling, or punctuation errors
-4. Optimize sentence structure and paragraph flow
-5. Ensure the content meets the target length ({target_length} words)
-6. Make the introduction more engaging if needed
-7. Strengthen the conclusion
-8. Ensure consistent formatting and markdown structure
-9. Maintain all factual content - only improve presentation
+Instructions (DO NOT include these in your response):
+- Improve readability and flow
+- Enhance the {style} writing style and tone
+- Fix any grammar, spelling, or punctuation errors
+- Optimize sentence structure and paragraph flow
+- Ensure the content meets the target length ({target_length} words)
+- Make the introduction more engaging if needed
+- Strengthen the conclusion
+- Ensure consistent formatting and markdown structure
+- Maintain all factual content - only improve presentation
 
-Return the polished version of the blog post. Keep the same markdown structure and headings."""
+IMPORTANT: Return ONLY the polished blog post content. Do NOT include any instructions, explanations, or meta-commentary. Keep the same markdown structure and headings."""
 
         try:
             response = await self.async_client.chat.completions.create(
                 model=os.getenv("LLM_MODEL", "gpt-4"),
                 messages=[
-                    {"role": "system", "content": "You are an expert editor who polishes content to publication quality while maintaining accuracy and factual information."},
+                    {"role": "system", "content": "You are an expert editor who polishes content to publication quality while maintaining accuracy and factual information. Return ONLY the polished content - never include instructions, explanations, or meta-commentary in your response."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
@@ -150,7 +192,49 @@ Return the polished version of the blog post. Keep the same markdown structure a
             )
             
             polished_content = response.choices[0].message.content
-            return polished_content.strip()
+            
+            # Remove any instruction-like text that might appear at the end
+            # Look for common patterns like "Please:", numbered lists of instructions, etc.
+            lines = polished_content.split('\n')
+            cleaned_lines = []
+            skip_rest = False
+            
+            # Instruction markers that indicate we should stop
+            instruction_markers = [
+                'please:',
+                'instructions:',
+                'return the polished',
+                'do not include',
+                'improve readability',
+                'enhance the',
+                'fix any grammar',
+                'optimize sentence',
+                'ensure the content',
+                'make the introduction',
+                'strengthen the conclusion',
+                'ensure consistent formatting',
+                'maintain all factual'
+            ]
+            
+            for i, line in enumerate(lines):
+                line_stripped = line.strip()
+                line_lower = line_stripped.lower()
+                
+                # Check if this line looks like the start of instructions
+                # (usually "Please:" or a numbered list starting with "1.")
+                if (line_lower.startswith('please:') or 
+                    (line_lower.startswith('1.') and any(marker in line_lower for marker in instruction_markers)) or
+                    (i > len(lines) * 0.7 and any(marker in line_lower for marker in instruction_markers[:3]))):
+                    # Only remove if it's in the last 30% of content (likely instructions)
+                    if i > len(lines) * 0.7:
+                        skip_rest = True
+                        break
+                
+                if not skip_rest:
+                    cleaned_lines.append(line)
+            
+            polished_content = '\n'.join(cleaned_lines).strip()
+            return polished_content
         except Exception as e:
             print(f"Error polishing content: {str(e)}")
             # Return original content on error
