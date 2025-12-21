@@ -28,15 +28,18 @@ export default function Home() {
             </p>
           </Link>
           
-          <div className="flex flex-col h-48 items-center justify-center rounded-lg bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 p-6">
+          <Link
+            href="/generate"
+            className="flex flex-col h-48 items-center justify-center rounded-lg bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 p-6 transition-all hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-lg"
+          >
             <div className="text-4xl mb-4">🚀</div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Generate Content
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-              Use the API endpoint to generate new content from a PRD
+              Create a new blog post from a Product Requirements Document
             </p>
-          </div>
+          </Link>
         </div>
 
         <div className="mt-8 text-center">

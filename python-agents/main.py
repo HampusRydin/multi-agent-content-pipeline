@@ -123,7 +123,10 @@ async def generate_content(request: ContentRequest):
         return ContentResponse(
             content=final_content,
             status="success",
-            metadata=result.get("metadata", {})
+            metadata={
+                **result.get("metadata", {}),
+                "post_id": post_id  # Include post_id in metadata so frontend can redirect
+            }
         )
     except Exception as e:
         return ContentResponse(

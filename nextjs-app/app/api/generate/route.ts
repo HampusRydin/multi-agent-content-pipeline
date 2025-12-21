@@ -5,7 +5,14 @@ const FASTAPI_URL = process.env.FASTAPI_URL || 'http://localhost:8000';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { topic, target_length, style } = body;
+    const { prd, topic, target_length, style } = body;
+
+    if (!prd || !topic) {
+      return NextResponse.json(
+        { error: 'PRD and topic are required' },
+        { status: 400 }
+      );
+    }
 
     // Call the Python FastAPI server
     const response = await fetch(`${FASTAPI_URL}/generate`, {
@@ -14,6 +21,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        prd,
         topic,
         target_length,
         style,
