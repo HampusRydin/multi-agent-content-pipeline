@@ -139,18 +139,20 @@ class ResearchAgent:
         self,
         topic: str,
         research_data: Dict[str, Any],
-        metrics: Dict[str, Any]
+        metrics: Dict[str, Any],
+        post_id: Optional[int] = None
     ) -> None:
         """
         Log research outputs and metrics to Supabase.
         
         Schema: id (int8), agent (text), input (text), output (text), 
-                timestamp (timestamptz), metadata (json)
+                timestamp (timestamptz), metadata (json), post_id (bigint)
         
         Args:
             topic: Research topic
             research_data: Structured research data
             metrics: Performance metrics (timing, result count, etc.)
+            post_id: ID of the post this log belongs to (optional)
         """
         if not self.supabase:
             return
@@ -169,6 +171,10 @@ class ResearchAgent:
                     **metrics  # Include all metrics in metadata
                 }
             }
+            
+            # Add post_id if provided
+            if post_id is not None:
+                log_entry["post_id"] = post_id
             
             # Insert into Supabase agent_logs table
             response = self.supabase.table("agent_logs").insert(log_entry).execute()
@@ -215,7 +221,12 @@ class ResearchAgent:
         }
         
         # Log to Supabase
-        self._log_to_supabase(topic, research_data, metrics)
+        post_id = state.get("post_id")
+        if post_id is None:
+            print(f"\033[93m[WARNING]\033[0m Researcher: post_id is None in state! Logs will not be linked.")
+        else:
+            print(f"\033[94m[DEBUG]\033[0m Researcher: Logging with post_id={post_id}")
+        self._log_to_supabase(topic, research_data, metrics, post_id)
         
         print(f"\033[92m[SUCCESS]\033[0m Research completed: {len(research_data.get('findings', []))} findings, {elapsed_time:.2f}s")
         
@@ -265,13 +276,19 @@ class ResearchAgent:
         }
         
         # Log to Supabase (run in executor to avoid blocking)
+        post_id = state.get("post_id")
+        if post_id is None:
+            print(f"\033[93m[WARNING]\033[0m Researcher (async): post_id is None in state! Logs will not be linked.")
+        else:
+            print(f"\033[94m[DEBUG]\033[0m Researcher (async): Logging with post_id={post_id}")
         if self.supabase:
             await loop.run_in_executor(
                 None,
                 self._log_to_supabase,
                 topic,
                 research_data,
-                metrics
+                metrics,
+                post_id
             )
         
         print(f"Research completed: {len(research_data.get('findings', []))} findings, {elapsed_time:.2f}s")

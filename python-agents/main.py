@@ -64,60 +64,61 @@ async def generate_content(request: ContentRequest):
     Generate content using the multi-agent pipeline.
     """
     try:
-        # Run the workflow with PRD and topic
-        result = await workflow.ainvoke({
+        # Create post entry first (with empty final_post, will be updated later)
+        # This allows us to get the post_id and link all agent logs to it
+        post_id = None
+        if supabase:
+            try:
+                post_entry = {
+                    "prd": request.prd,
+                    "final_post": ""  # Will be updated after workflow completes
+                }
+                print(f"Creating post entry in Supabase (PRD length: {len(request.prd)})...")
+                response = supabase.table("posts").insert(post_entry).execute()
+                
+                if response.data and len(response.data) > 0:
+                    post_id = response.data[0].get("id")
+                    print(f"\033[92m[SUCCESS]\033[0m Post created with ID: {post_id}")
+                else:
+                    print("\033[93m[WARNING]\033[0m Post created but no ID returned. Logs will not be linked.")
+            except Exception as e:
+                error_msg = str(e)
+                print(f"\033[91m[ERROR]\033[0m Error creating post in Supabase: {error_msg}")
+                print("Workflow will continue, but logs will not be linked to a post.")
+                if "permission" in error_msg.lower() or "policy" in error_msg.lower() or "rls" in error_msg.lower():
+                    print("\n\033[93m[WARNING]\033[0m This looks like a Row Level Security (RLS) issue.")
+                    print("   Check your Supabase table policies for the posts table.")
+        
+        # Run the workflow with PRD, topic, and post_id
+        print(f"\033[94m[DEBUG]\033[0m Starting workflow with post_id: {post_id}")
+        workflow_state = {
             "prd": request.prd,
             "topic": request.topic,
             "target_length": request.target_length or 1000,
             "style": request.style or "professional",
+            "post_id": post_id,  # Pass post_id through workflow
             "fact_check_iterations": 0  # Initialize iteration counter
-        })
+        }
+        print(f"\033[94m[DEBUG]\033[0m Workflow state post_id: {workflow_state.get('post_id')}")
+        result = await workflow.ainvoke(workflow_state)
         
         final_content = result.get("final_content", "")
         
-        # Save to posts table in Supabase
-        print(f"Attempting to save post to Supabase...")
-        print(f"Supabase client initialized: {supabase is not None}")
-        print(f"Final content length: {len(final_content) if final_content else 0}")
-        
-        if not supabase:
-            print("Warning: Supabase client not initialized. Check SUPABASE_URL and SUPABASE_KEY in .env")
-        elif not final_content or final_content.strip() == "":
-            print("Warning: Final content is empty, skipping post save")
-        else:
+        # Update the post with final content
+        if post_id and supabase and final_content:
             try:
-                post_entry = {
-                    "prd": request.prd,
+                print(f"Updating post {post_id} with final content (length: {len(final_content)})...")
+                update_response = supabase.table("posts").update({
                     "final_post": final_content
-                }
-                print(f"Saving post entry (PRD length: {len(request.prd)}, Post length: {len(final_content)})...")
-                response = supabase.table("posts").insert(post_entry).execute()
+                }).eq("id", post_id).execute()
                 
-                if response.data:
-                    print(f"\033[92m[SUCCESS]\033[0m Post saved to Supabase: {len(response.data)} record(s)")
-                    print(f"Saved post ID: {response.data[0].get('id', 'unknown')}")
+                if update_response.data:
+                    print(f"\033[92m[SUCCESS]\033[0m Post {post_id} updated with final content")
                 else:
-                    print("\033[93m[WARNING]\033[0m No data returned from Supabase insert")
-                    print(f"Response: {response}")
-                    # Check for RLS or permission errors
-                    if hasattr(response, 'error') and response.error:
-                        print(f"Supabase error: {response.error}")
+                    print("\033[93m[WARNING]\033[0m Post update returned no data")
             except Exception as e:
-                error_msg = str(e)
-                print(f"\033[91m[ERROR]\033[0m Error saving post to Supabase: {error_msg}")
-                
-                # Check for common Supabase errors
-                if "permission" in error_msg.lower() or "policy" in error_msg.lower() or "rls" in error_msg.lower():
-                    print("\n\033[93m[WARNING]\033[0m This looks like a Row Level Security (RLS) issue.")
-                    print("   Check your Supabase table policies:")
-                    print("   1. Go to Supabase Dashboard > Table Editor > posts")
-                    print("   2. Click 'Policies' tab")
-                    print("   3. Ensure INSERT policy allows your service role key")
-                    print("   4. Or disable RLS temporarily for testing")
-                
-                import traceback
-                traceback.print_exc()
-                # Don't fail the request if saving fails
+                print(f"\033[91m[ERROR]\033[0m Error updating post: {str(e)}")
+                # Don't fail the request if update fails
         
         return ContentResponse(
             content=final_content,

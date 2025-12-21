@@ -160,18 +160,20 @@ Return the polished version of the blog post. Keep the same markdown structure a
         self,
         input_content: str,
         polished_content: str,
-        metrics: Dict[str, Any]
+        metrics: Dict[str, Any],
+        post_id: Optional[int] = None
     ) -> None:
         """
         Log polisher outputs and metrics to Supabase.
         
         Schema: id (int8), agent (text), input (text), output (text), 
-                timestamp (timestamptz), metadata (json)
+                timestamp (timestamptz), metadata (json), post_id (bigint)
         
         Args:
             input_content: Content before polishing (input)
             polished_content: Polished content (output)
             metrics: Performance metrics
+            post_id: ID of the post this log belongs to (optional)
         """
         if not self.supabase:
             return
@@ -191,6 +193,10 @@ Return the polished version of the blog post. Keep the same markdown structure a
                     **metrics  # Include all metrics in metadata
                 }
             }
+            
+            # Add post_id if provided
+            if post_id is not None:
+                log_entry["post_id"] = post_id
             
             # Insert into Supabase agent_logs table
             response = self.supabase.table("agent_logs").insert(log_entry).execute()
@@ -243,7 +249,8 @@ Return the polished version of the blog post. Keep the same markdown structure a
         }
         
         # Log to Supabase
-        self._log_to_supabase(content_to_polish, final_content, metrics)
+        post_id = state.get("post_id")
+        self._log_to_supabase(content_to_polish, final_content, metrics, post_id)
         
         print(f"Polishing completed: {word_count} words, {elapsed_time:.2f}s")
         
@@ -299,6 +306,11 @@ Return the polished version of the blog post. Keep the same markdown structure a
         }
         
         # Log to Supabase (run in executor to avoid blocking)
+        post_id = state.get("post_id")
+        if post_id is None:
+            print(f"\033[93m[WARNING]\033[0m Polisher (async): post_id is None in state! Logs will not be linked.")
+        else:
+            print(f"\033[94m[DEBUG]\033[0m Polisher (async): Logging with post_id={post_id}")
         if self.supabase:
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
@@ -306,7 +318,8 @@ Return the polished version of the blog post. Keep the same markdown structure a
                 self._log_to_supabase,
                 content_to_polish,
                 final_content,
-                metrics
+                metrics,
+                post_id
             )
         
         print(f"Polishing completed: {word_count} words, {elapsed_time:.2f}s")

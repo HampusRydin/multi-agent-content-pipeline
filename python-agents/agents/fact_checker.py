@@ -320,19 +320,21 @@ Respond in JSON format:
         draft_content: str,
         fact_checked_content: str,
         status: str,
-        metrics: Dict[str, Any]
+        metrics: Dict[str, Any],
+        post_id: Optional[int] = None
     ) -> None:
         """
         Log fact-checker outputs and metrics to Supabase.
         
         Schema: id (int8), agent (text), input (text), output (text), 
-                timestamp (timestamptz), metadata (json)
+                timestamp (timestamptz), metadata (json), post_id (bigint)
         
         Args:
             draft_content: Original draft (input)
             fact_checked_content: Fact-checked content (output)
             status: Pass or fail status
             metrics: Performance metrics
+            post_id: ID of the post this log belongs to (optional)
         """
         if not self.supabase:
             return
@@ -351,6 +353,10 @@ Respond in JSON format:
                     **metrics  # Include all metrics in metadata
                 }
             }
+            
+            # Add post_id if provided
+            if post_id is not None:
+                log_entry["post_id"] = post_id
             
             # Insert into Supabase agent_logs table
             response = self.supabase.table("agent_logs").insert(log_entry).execute()
@@ -398,7 +404,8 @@ Respond in JSON format:
         }
         
         # Log to Supabase
-        self._log_to_supabase(draft_content, fact_checked_content, status, metrics)
+        post_id = state.get("post_id")
+        self._log_to_supabase(draft_content, fact_checked_content, status, metrics, post_id)
         
         status_color = "\033[92m[PASS]\033[0m" if status == "pass" else "\033[91m[FAIL]\033[0m"
         print(f"{status_color} Fact-check {status}: {len(issues.get('issues', []))} issues found, {elapsed_time:.2f}s")
@@ -448,6 +455,11 @@ Respond in JSON format:
         }
         
         # Log to Supabase (run in executor to avoid blocking)
+        post_id = state.get("post_id")
+        if post_id is None:
+            print(f"\033[93m[WARNING]\033[0m Fact-checker (async): post_id is None in state! Logs will not be linked.")
+        else:
+            print(f"\033[94m[DEBUG]\033[0m Fact-checker (async): Logging with post_id={post_id}")
         if self.supabase:
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
@@ -456,7 +468,8 @@ Respond in JSON format:
                 draft_content,
                 fact_checked_content,
                 status,
-                metrics
+                metrics,
+                post_id
             )
         
         status_color = "\033[92m[PASS]\033[0m" if status == "pass" else "\033[91m[FAIL]\033[0m"

@@ -34,13 +34,13 @@ export async function GET(
       );
     }
 
-    // Fetch all agent_logs
-    // Since there's no direct post_id link, we'll match logs by:
-    // 1. Finding writer logs where input matches the PRD
-    // 2. Then finding all logs within a time window of those writer logs
-    const { data: allLogs, error: logsError } = await supabase
+    // Fetch agent_logs for this specific post using post_id
+    // Convert postId to number for proper comparison
+    const postIdNum = parseInt(postId, 10);
+    const { data: relatedLogs, error: logsError } = await supabase
       .from('agent_logs')
       .select('*')
+      .eq('post_id', postIdNum)
       .order('timestamp', { ascending: true });
 
     if (logsError) {
@@ -50,47 +50,15 @@ export async function GET(
       );
     }
 
-    // Find writer logs that match this post's PRD
-    const postPRD = post.prd.trim();
-    const matchingWriterLogs = allLogs?.filter((log) => {
-      if (log.agent === 'writer') {
-        const logInput = log.input.trim();
-        // Match if PRD and input are very similar
-        // Check for exact match or significant overlap
-        if (logInput === postPRD) return true;
-        // Check if they share a significant portion (at least 50 chars overlap)
-        const minLength = Math.min(logInput.length, postPRD.length);
-        if (minLength < 50) return logInput === postPRD;
-        // Check if one contains a substantial portion of the other
-        return logInput.includes(postPRD.substring(0, Math.min(200, postPRD.length))) ||
-               postPRD.includes(logInput.substring(0, Math.min(200, logInput.length)));
-      }
-      return false;
-    }) || [];
-
-    if (matchingWriterLogs.length === 0) {
-      // If no exact match, try to find logs by timestamp proximity
-      // This is a fallback - ideally we'd have a post_id in agent_logs
+    // If no logs found, return empty array (might be an old post before post_id was added)
+    if (!relatedLogs || relatedLogs.length === 0) {
       return NextResponse.json({
         post,
         logs: [],
         groupedLogs: [],
-        warning: 'No matching agent logs found for this post'
+        warning: 'No agent logs found for this post. This may be an older post created before post_id linking was implemented.'
       });
     }
-
-    // Get the time range of matching writer logs
-    const timestamps = matchingWriterLogs.map(log => new Date(log.timestamp).getTime());
-    const minTime = Math.min(...timestamps);
-    const maxTime = Math.max(...timestamps);
-    // Include logs within 30 minutes before and after the writer logs
-    const timeWindow = 30 * 60 * 1000; // 30 minutes in milliseconds
-
-    // Filter logs that are within the time window
-    const relatedLogs = allLogs?.filter((log) => {
-      const logTime = new Date(log.timestamp).getTime();
-      return logTime >= (minTime - timeWindow) && logTime <= (maxTime + timeWindow);
-    }) || [];
 
     // Sort by timestamp and group by agent type
     const sortedLogs = relatedLogs.sort((a, b) => 

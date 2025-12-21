@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, END
-from typing import TypedDict, Annotated, Literal
+from typing import TypedDict, Annotated, Literal, Optional
 from agents.researcher import ResearchAgent
 from agents.writer import WriterAgent
 from agents.fact_checker import FactCheckerAgent
@@ -11,6 +11,7 @@ class WorkflowState(TypedDict):
     topic: str
     target_length: Annotated[int, "Target length for the content"]
     style: Annotated[str, "Writing style"]
+    post_id: Annotated[Optional[int], "ID of the post in the posts table"]
     research_data: Annotated[dict, "Research findings"]
     draft_content: Annotated[str, "Initial draft"]
     fact_checked_content: Annotated[str, "Content after fact checking"]
