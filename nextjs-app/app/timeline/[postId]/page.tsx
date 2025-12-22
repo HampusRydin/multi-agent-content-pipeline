@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 
 interface AgentLog {
   id: number;
@@ -142,6 +143,17 @@ export default function TimelinePage() {
     <div className="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
+          <div className="mb-4">
+            <Link 
+              href="/posts" 
+              className="text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Posts
+            </Link>
+          </div>
           <h1 className="text-3xl font-bold text-white mb-2">
             Content Generation Timeline
           </h1>
@@ -167,7 +179,7 @@ export default function TimelinePage() {
             </button>
           </div>
           {expandedSections.has('prd') && (
-            <div className="mt-4 p-4 bg-black border border-gray-800 rounded-lg">
+            <div className="mt-4 p-4 bg-gray-800 border border-gray-700 rounded-lg">
               <pre className="whitespace-pre-wrap text-sm text-gray-200 font-mono">
                 {post.prd}
               </pre>
@@ -225,7 +237,7 @@ export default function TimelinePage() {
                           {isExpanded ? (
                             <div className="space-y-2">
                               {researchData.findings?.slice(0, 10).map((finding: any, i: number) => (
-                                <div key={i} className="p-3 bg-black border border-gray-800 rounded">
+                                <div key={i} className="p-3 bg-gray-800 border border-gray-700 rounded">
                                   <p className="font-medium text-sm text-white">{finding.title}</p>
                                   <p className="text-sm text-gray-400 mt-1">{finding.snippet}</p>
                                   {finding.source && (
@@ -287,7 +299,7 @@ export default function TimelinePage() {
                     <p className="text-sm text-gray-400 mb-3">
                       {wordCount} words
                     </p>
-                    <div className="p-4 bg-black border border-gray-800 rounded-lg">
+                    <div className="p-4 bg-gray-800 border border-gray-700 rounded-lg">
                       {isExpanded ? (
                         <p className="text-sm text-gray-200 whitespace-pre-wrap">
                           {log.output}
@@ -370,7 +382,7 @@ export default function TimelinePage() {
                       </div>
                     )}
                     {factCheckData.verificationSummary && (
-                      <div className="mt-3 p-3 bg-black border border-gray-800 rounded">
+                      <div className="mt-3 p-3 bg-gray-800 border border-gray-700 rounded">
                         <p className="text-sm text-gray-200">
                           {factCheckData.verificationSummary}
                         </p>
@@ -407,7 +419,7 @@ export default function TimelinePage() {
                     <p className="text-sm text-gray-400 mb-3">
                       {wordCount} words
                     </p>
-                    <div className="p-4 bg-black border border-gray-800 rounded-lg">
+                    <div className="p-4 bg-gray-800 border border-gray-700 rounded-lg">
                       {isExpanded ? (
                         <p className="text-sm text-gray-200 whitespace-pre-wrap">
                           {log.output}
@@ -469,7 +481,7 @@ export default function TimelinePage() {
               </div>
             </div>
             {expandedSections.has('final') && (
-              <div className="mt-4 p-4 bg-black border border-gray-800 rounded-lg">
+              <div className="mt-4 p-4 bg-gray-800 border border-gray-700 rounded-lg">
                 <p className="text-sm text-gray-200 whitespace-pre-wrap">
                   {post.final_post}
                 </p>
