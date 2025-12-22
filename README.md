@@ -1,4 +1,4 @@
-# 🌐 Multi-Agent Content Pipeline
+# Multi-Agent Content Pipeline
 
 ### *Generate high-quality blog posts from PRDs using a fully orchestrated multi-agent system.*
 
