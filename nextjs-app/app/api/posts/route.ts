@@ -17,6 +17,12 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    console.log('Fetching posts:', { 
+      supabaseUrl: SUPABASE_URL?.substring(0, 40),
+      hasKey: !!SUPABASE_KEY,
+      keyType: SUPABASE_KEY?.substring(0, 15)
+    });
+
     // Fetch all posts
     const { data: posts, error } = await supabase
       .from('posts')
@@ -24,9 +30,25 @@ export async function GET(request: NextRequest) {
       .order('id', { ascending: false })
       .limit(100);
 
+    console.log('Posts fetch result:', {
+      count: posts?.length,
+      error: error?.message,
+      errorCode: error?.code,
+      errorDetails: error
+    });
+
     if (error) {
+      console.error('Posts fetch error:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch posts' },
+        { 
+          error: 'Failed to fetch posts', 
+          details: error.message,
+          code: error.code,
+          debug: {
+            supabaseUrl: SUPABASE_URL?.substring(0, 40),
+            hasKey: !!SUPABASE_KEY
+          }
+        },
         { status: 500 }
       );
     }
