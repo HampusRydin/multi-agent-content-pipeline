@@ -34,7 +34,7 @@ Deployed as:
 
 The live demo is **password-protected** to prevent abuse of API credits.
 
-- Employers / reviewers: the demo password is provided in application materials.  
+- Employers / reviewers: the demo password is provided in application materials or by request.  
 - After login, you can:
   - Submit a PRD  
   - Watch the multi-agent pipeline run  
@@ -201,11 +201,9 @@ To run your **own** copy (with your own API keys and quotas):
 
 ## 🛠️ Developer Quick Start (Local)
 
-See [QUICKSTART.md](QUICKSTART.md) for a concise, copy-paste oriented guide.
-
 Key steps:
 
-1. Clone and create `.env`  
+1. Clone and create `.env` (see "Self-Hosting" section above)  
 2. Run Supabase migrations  
 3. Start backend: `python-agents/main.py`  
 4. Start frontend: `nextjs-app` → `npm run dev`  
@@ -338,15 +336,6 @@ This executes the LangGraph workflow end-to-end and logs results to Supabase.
 ## 📄 License
 
 MIT License – see [`LICENSE`](LICENSE) for details.
-
----
-
-## 👤 Contributing
-
-Contributions are welcome:
-
-- Open an issue to discuss ideas or bugs  
-- Submit a PR for improvements (docs, code, tests, UX, etc.)  
 
 ---
 
