@@ -49,7 +49,7 @@ multi-agent-content-pipeline/
 └── README.md
 ```
 
-## 🚀 Quick Start
+## 🚀 Quick Start (for people cloning this repo)
 
 **New to the project?** Check out [QUICKSTART.md](QUICKSTART.md) for a 5-minute setup guide!
 
@@ -79,14 +79,14 @@ git clone https://github.com/HampusRydin/multi-agent-content-pipeline.git
 cd multi-agent-content-pipeline
 ```
 
-### Step 2: Set Up Environment Variables
+### Step 2: Set Up Environment Variables (You MUST use your own keys)
 
 1. Copy the example environment file:
    ```bash
    cp .env.example .env
    ```
 
-2. Edit `.env` and fill in your API keys:
+2. Edit `.env` and fill in **your own** API keys and URLs (do not reuse someone else’s keys):
    ```env
    SUPABASE_URL=https://your-project.supabase.co
    SUPABASE_KEY=your_supabase_service_role_key
@@ -97,7 +97,26 @@ cd multi-agent-content-pipeline
    FASTAPI_URL=http://localhost:8000
    ```
 
-**Note:** Both Python and Next.js automatically load from this single root `.env` file!
+**Important:**
+- You **must create your own**:
+  - Supabase project
+  - OpenAI API key
+  - SerpAPI key
+- Do **not** hardcode or reuse someone else’s credentials.
+- Both Python and Next.js automatically load from this single root `.env` file.
+
+### Can I just click the deployed URL and use it?
+
+- If the repository owner has a public deployment (for example:  
+  `https://multi-agent-content-pipeline.vercel.app` with backend  
+  `https://multi-agent-pipeline-api.fly.dev`), you can **view** it as a demo.
+- However, for real usage you should:
+  1. **Clone this repo**
+  2. Create your **own** Supabase / OpenAI / SerpAPI accounts
+  3. Set your own API keys in `.env`
+  4. Optionally deploy your own copies to Vercel and Fly.io
+
+This keeps credentials private and avoids all traffic going through the author’s accounts.
 
 ### Step 3: Set Up Supabase Database
 
@@ -331,10 +350,35 @@ Contributions welcome! Please feel free to submit a Pull Request.
 ## 🚀 Deployment
 
 The application is configured for deployment to:
-- **Frontend**: Vercel (Next.js) - configured via `nextjs-app/`
-- **Backend**: Fly.io (FastAPI) - configured via `python-agents/fly.toml` and `Dockerfile`
+- **Frontend** (example): `https://multi-agent-content-pipeline.vercel.app` (Vercel, Next.js)
+- **Backend** (example): `https://multi-agent-pipeline-api.fly.dev` (Fly.io, FastAPI)
 
-Essential configuration files are included. Set environment variables in your deployment platform and run Supabase migrations before deploying.
+You should **replace these with your own domains** when you deploy, but the steps are:
+
+- **Vercel (frontend)**  
+  - Connect this GitHub repo and use `nextjs-app/` as the project root  
+  - Set these environment variables in Vercel (Production):
+    - `FASTAPI_URL=https://your-fly-backend-url.fly.dev`
+    - `SUPABASE_URL=https://your-project-id.supabase.co`
+    - `SUPABASE_KEY=your_supabase_service_role_key` (secret; server-side only)
+    - `NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co`
+    - `NEXT_PUBLIC_SUPABASE_KEY=your_supabase_anon_or_publishable_key`
+
+- **Fly.io (backend)**  
+  - Use `python-agents/` as the app root with the included `Dockerfile` and `fly.toml`  
+  - Set these secrets with `flyctl secrets set`:
+    - `SUPABASE_URL=https://your-project-id.supabase.co`
+    - `SUPABASE_KEY=your_supabase_service_role_key`
+    - `OPENAI_API_KEY=your_openai_api_key`
+    - `SERPAPI_API_KEY=your_serpapi_api_key`
+    - `LLM_MODEL=gpt-4o-mini`
+    - `LLM_TEMPERATURE=0.7`
+    - `ENVIRONMENT=production`
+
+Essential configuration files are included; you mainly need to:
+1. Create your own Supabase project and run the migrations  
+2. Deploy the backend to Fly.io and note its URL  
+3. Deploy the frontend to Vercel and point `FASTAPI_URL` at your Fly.io URL  
 
 ## 📚 Additional Resources
 

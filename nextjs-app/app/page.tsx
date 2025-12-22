@@ -14,7 +14,14 @@ export default function Home() {
           </p>
         </div>
         
-        <div className="mt-12 grid gap-6 md:grid-cols-2 w-full max-w-2xl">
+        <div className="mt-6 text-sm text-gray-500 dark:text-gray-400 text-center">
+          <p>
+            Live demo is password protected to avoid abuse of API credits. Ask the
+            project owner for the demo password, then log in on the next page.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-6 md:grid-cols-2 w-full max-w-2xl">
           <Link
             href="/posts"
             className="flex flex-col h-48 items-center justify-center rounded-lg bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 p-6 transition-all hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-lg"
