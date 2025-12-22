@@ -57,9 +57,13 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
+  // Ensure FASTAPI_URL doesn't have trailing slash
+  const apiUrl = FASTAPI_URL.replace(/\/$/, '');
   return NextResponse.json({ 
     message: 'Generate endpoint - use POST to generate content',
-    fastapi_url: FASTAPI_URL 
+    fastapi_url: apiUrl,
+    env_fastapi_url: process.env.FASTAPI_URL,
+    generate_url: `${apiUrl}/generate`
   });
 }
 
