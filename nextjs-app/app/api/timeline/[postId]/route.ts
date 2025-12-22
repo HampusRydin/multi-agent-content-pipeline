@@ -33,24 +33,64 @@ export async function GET(
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // Convert postId to number for proper comparison
+    const postIdNum = parseInt(postId, 10);
+    if (isNaN(postIdNum)) {
+      return NextResponse.json(
+        { error: 'Invalid post ID format', received: postId },
+        { status: 400 }
+      );
+    }
+
+    console.log('Fetching post:', { postId, postIdNum, supabaseUrl: SUPABASE_URL?.substring(0, 30) });
+
+    // First, let's check if ANY posts exist
+    const { data: allPosts, error: allPostsError } = await supabase
+      .from('posts')
+      .select('id')
+      .limit(5);
+    
+    console.log('All posts check:', { 
+      count: allPosts?.length, 
+      ids: allPosts?.map(p => p.id),
+      error: allPostsError?.message 
+    });
+
     // Fetch the post
     const { data: post, error: postError } = await supabase
       .from('posts')
       .select('*')
-      .eq('id', postId)
+      .eq('id', postIdNum)
       .single();
 
+    console.log('Post fetch result:', { 
+      found: !!post, 
+      postId: post?.id,
+      error: postError?.message,
+      errorCode: postError?.code,
+      errorDetails: postError
+    });
+
     if (postError || !post) {
-      console.error('Post fetch error:', postError);
       return NextResponse.json(
-        { error: 'Post not found', details: postError?.message },
+        { 
+          error: 'Post not found', 
+          details: postError?.message,
+          code: postError?.code,
+          requestedId: postIdNum,
+          availableIds: allPosts?.map(p => p.id),
+          debug: {
+            hasUrl: !!SUPABASE_URL,
+            hasKey: !!SUPABASE_KEY,
+            keyType: SUPABASE_KEY?.substring(0, 10) // Show first 10 chars to identify key type
+          }
+        },
         { status: 404 }
       );
     }
 
     // Fetch agent_logs for this specific post using post_id
-    // Convert postId to number for proper comparison
-    const postIdNum = parseInt(postId, 10);
+    // postIdNum already defined above
     const { data: relatedLogs, error: logsError } = await supabase
       .from('agent_logs')
       .select('*')
