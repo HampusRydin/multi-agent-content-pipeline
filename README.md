@@ -1,95 +1,156 @@
-# Multi-Agent Content Pipeline
+# 🌐 Multi-Agent Content Pipeline
 
-A LangGraph-powered multi-agent system for generating high-quality blog posts from Product Requirements Documents (PRDs). Features automated research, writing, fact-checking, and style polishing with a beautiful timeline visualization.
+### *Generate high-quality blog posts from PRDs using a fully orchestrated multi-agent system.*
 
-## ✨ Features
+This project turns a **Product Requirements Document (PRD)** into a polished, fact-checked, publication-ready blog post using a multi-agent workflow.
 
-- 🔍 **Research Agent**: Automated web research using SerpAPI
-- ✍️ **Writer Agent**: Generates blog post drafts from PRDs
-- ✅ **Fact-Checker Agent**: Verifies claims and loops back for corrections
-- ✨ **Polisher Agent**: Refines content for style and quality
-- 📊 **Supabase Logging**: Tracks all agent executions and metrics
-- 🔄 **LangGraph Workflow**: Orchestrates multi-agent pipeline with conditional routing
-- 📈 **Timeline Visualization**: Beautiful UI to view the complete generation process
+Agents and core components:
 
-## 🏗️ Architecture
+- 🧠 **Research Agent** – Uses SerpAPI for web research  
+- ✍️ **Writer Agent** – Drafts the article from PRD + research  
+- 🔍 **Fact-Checker Agent** – Iteratively validates claims, can loop back to writer  
+- 🎨 **Polisher Agent** – Refines tone, clarity, and style  
+- 🧩 **LangGraph** – Orchestrates the multi-agent workflow and loops  
+- 📊 **Supabase** – Stores posts and detailed agent logs  
+- 🌐 **Next.js UI** – Timeline view of the entire generation process  
 
-- **Frontend**: Next.js 16 (TypeScript/React) with Tailwind CSS
-- **Backend**: FastAPI (Python) with async support
-- **Workflow**: LangGraph for multi-agent orchestration
-- **Database**: Supabase (PostgreSQL) for logging and storage
-- **Research**: SerpAPI for web search
-- **LLM**: OpenAI GPT models
+Deployed as:
+
+- **Frontend (Vercel)** → Next.js App Router  
+- **Backend (Fly.io)** → FastAPI + LangGraph  
+- **Database (Supabase)** → PostgreSQL for logs and posts  
+
+---
+
+## 🚀 Live Demo
+
+👉 **Frontend:**  
+`https://multi-agent-content-pipeline.vercel.app`
+
+👉 **Backend (reference only):**  
+`https://multi-agent-pipeline-api.fly.dev`
+
+### 🔐 Access Notice
+
+The live demo is **password-protected** to prevent abuse of API credits.
+
+- Employers / reviewers: the demo password is provided in application materials.  
+- After login, you can:
+  - Submit a PRD  
+  - Watch the multi-agent pipeline run  
+  - Inspect the timeline of each agent’s output  
+
+> You do **not** need to install or run anything locally to evaluate the project.
+
+---
+
+## 🎯 What This Project Demonstrates (For Employers)
+
+This repository showcases a complete, production-style AI engineering system:
+
+- ✔ Multi-agent orchestration with LangGraph  
+- ✔ End-to-end architecture (Next.js frontend + FastAPI backend)  
+- ✔ Cloud-native deployment (Vercel + Fly.io + Supabase)  
+- ✔ Secure secrets management and environment setup  
+- ✔ Supabase integration with structured logging (`agent_logs`, `posts`)  
+- ✔ Timeline UI to visualize agent steps and iterations  
+- ✔ Clean, modular code structure suitable for extension  
+
+You can:
+- Use the live demo to see the workflow end-to-end  
+- Browse the code to understand architecture and implementation details  
+
+---
+
+## ⚙️ Architecture Overview
+
+- **Frontend:** Next.js (App Router), TypeScript, Tailwind-style utility classes  
+- **Backend:** FastAPI + LangGraph (Python)  
+- **Database:** Supabase (PostgreSQL)  
+- **Search:** SerpAPI (for the research agent)  
+- **LLM:** OpenAI GPT models (configurable via `LLM_MODEL`)  
+- **Deployment:**  
+  - Vercel → Next.js app (`nextjs-app/`)  
+  - Fly.io → Python backend (`python-agents/`)  
+  - Supabase → Hosted Postgres for logs and posts  
+
+The UI exposes:
+- `/generate` – Create a new blog post from a PRD  
+- `/posts` – See all created posts  
+- `/timeline/[postId]` – Step-by-step timeline of the agents for a post  
+
+---
 
 ## 📁 Project Structure
 
-```
+```text
 multi-agent-content-pipeline/
-├── .env                    # Environment variables (create from .env.example)
-├── .env.example            # Example environment file
-├── python-agents/          # Python backend
-│   ├── agents/             # Agent implementations
-│   │   ├── researcher.py
-│   │   ├── writer.py
-│   │   ├── fact_checker.py
-│   │   └── polisher.py
-│   ├── migrations/        # Database migration SQL files
-│   ├── main.py            # FastAPI server
-│   ├── graph.py           # LangGraph workflow
-│   ├── load_env.py        # Environment loader
-│   ├── requirements.txt   # Python dependencies
-│   └── test_workflow.py   # Test script
-├── nextjs-app/            # Next.js frontend
-│   ├── app/
-│   │   ├── api/          # API routes
-│   │   ├── generate/    # Generate page
-│   │   ├── posts/       # Posts list page
-│   │   └── timeline/    # Timeline visualization
+├── .env                 # Root env file (not committed; see .env.example)
+├── .env.example         # Template for local env variables
+├── python-agents/       # Backend (FastAPI + LangGraph)
+│   ├── agents/          # Researcher, writer, fact_checker, polisher
+│   ├── graph.py         # LangGraph workflow definition
+│   ├── main.py          # FastAPI app (exposes /generate)
+│   ├── migrations/      # Supabase SQL migrations (tables, columns, RLS)
+│   ├── requirements.txt # Python dependencies
+│   └── test_workflow.py # Local workflow test script
+├── nextjs-app/          # Frontend (Next.js)
+│   ├── app/             # App Router pages and API routes
+│   │   ├── page.tsx             # Landing page
+│   │   ├── login/page.tsx       # Demo login page
+│   │   ├── generate/page.tsx    # Generate form
+│   │   ├── posts/page.tsx       # Posts list
+│   │   ├── timeline/[postId]/   # Timeline view
+│   │   └── api/                 # Next.js API routes
+│   │       ├── generate/route.ts
+│   │       ├── posts/route.ts
+│   │       └── timeline/[postId]/route.ts
+│   ├── middleware.ts    # Protects demo with password cookie
 │   └── package.json
 └── README.md
 ```
 
-## 🚀 Quick Start (for people cloning this repo)
+---
 
-**New to the project?** Check out [QUICKSTART.md](QUICKSTART.md) for a 5-minute setup guide!
+## 💡 Using the Project: Demo vs. Self-Hosting
 
-### Prerequisites
+### ✔ Live Demo (Recommended for Employers)
 
-- **Python 3.9+**
-- **Node.js 18+** and npm
-- **OpenAI API key** ([Get one here](https://platform.openai.com/api-keys))
-- **SerpAPI key** ([Get one here](https://serpapi.com/dashboard))
-- **Supabase account** ([Free tier works](https://supabase.com))
+- Open: `https://multi-agent-content-pipeline.vercel.app`  
+- Enter the **demo password** on the `/login` page  
+- Generate a post from a PRD and inspect the timeline  
 
-### Automated Setup
+You don’t need to:
+- Clone the repo  
+- Set up `.env`  
+- Deploy anything  
 
-Run the setup script for a guided setup:
+### ✔ Self-Hosting (For Developers)
 
-```bash
-chmod +x SETUP.sh
-./SETUP.sh
-```
+To run your **own** copy (with your own API keys and quotas):
 
-### Manual Setup
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/HampusRydin/multi-agent-content-pipeline.git
+   cd multi-agent-content-pipeline
+   ```
 
-### Step 1: Clone the Repository
+2. **Create your own accounts**
+   - Supabase project (free tier is fine)  
+   - OpenAI API key  
+   - SerpAPI key  
 
-```bash
-git clone https://github.com/HampusRydin/multi-agent-content-pipeline.git
-cd multi-agent-content-pipeline
-```
-
-### Step 2: Set Up Environment Variables (You MUST use your own keys)
-
-1. Copy the example environment file:
+3. **Create a root `.env` from the template**
    ```bash
    cp .env.example .env
    ```
 
-2. Edit `.env` and fill in **your own** API keys and URLs (do not reuse someone else’s keys):
+   Fill in **your own** values:
    ```env
    SUPABASE_URL=https://your-project.supabase.co
    SUPABASE_KEY=your_supabase_service_role_key
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_KEY=your_supabase_anon_or_publishable_key
    OPENAI_API_KEY=your_openai_api_key
    SERPAPI_API_KEY=your_serpapi_api_key
    LLM_MODEL=gpt-4o-mini
@@ -97,126 +158,60 @@ cd multi-agent-content-pipeline
    FASTAPI_URL=http://localhost:8000
    ```
 
-**Important:**
-- You **must create your own**:
-  - Supabase project
-  - OpenAI API key
-  - SerpAPI key
-- Do **not** hardcode or reuse someone else’s credentials.
-- Both Python and Next.js automatically load from this single root `.env` file.
+4. **Run Supabase migrations**
+   - In Supabase Dashboard → SQL Editor, run:
+     - `python-agents/migrations/001_create_agent_logs.sql`
+     - `python-agents/migrations/002_create_posts.sql`
+     - `python-agents/migrations/003_add_post_id_to_agent_logs.sql`
 
-### Can I just click the deployed URL and use it?
+5. **Start the backend (Python)**
+   ```bash
+   cd python-agents
+   python -m venv venv
+   source venv/bin/activate  # Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   python main.py
+   ```
 
-- If the repository owner has a public deployment (for example:  
-  `https://multi-agent-content-pipeline.vercel.app` with backend  
-  `https://multi-agent-pipeline-api.fly.dev`), you can **view** it as a demo.
-- However, for real usage you should:
-  1. **Clone this repo**
-  2. Create your **own** Supabase / OpenAI / SerpAPI accounts
-  3. Set your own API keys in `.env`
-  4. Optionally deploy your own copies to Vercel and Fly.io
+6. **Start the frontend (Next.js)**
+   ```bash
+   cd ../nextjs-app
+   npm install
+   npm run dev
+   ```
 
-This keeps credentials private and avoids all traffic going through the author’s accounts.
+7. **Use it locally**
+   - Frontend: `http://localhost:3000`  
+   - Backend: `http://localhost:8000`  
 
-### Step 3: Set Up Supabase Database
+---
 
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to **SQL Editor** in your Supabase Dashboard
-3. Run these migration files **in order**:
-   - `python-agents/migrations/001_create_agent_logs.sql`
-   - `python-agents/migrations/002_create_posts.sql`
-   - `python-agents/migrations/003_add_post_id_to_agent_logs.sql`
+## 🔐 Security Notes
 
-4. Verify tables were created in **Table Editor**
+- `.env` and keys are **never** committed to Git (see `.gitignore`).  
+- Supabase **service role key** is used only on:
+  - Backend (FastAPI on Fly.io)  
+  - Next.js API routes on Vercel  
+- The frontend uses `NEXT_PUBLIC_SUPABASE_KEY` (anon key) when needed.  
+- Demo access is protected behind `DEMO_PASSWORD` and an HTTP-only cookie.  
+- RLS is enabled on Supabase tables; policies in migrations allow basic inserts/selects and can be tightened for production.  
+- You should rotate keys if they are ever exposed.  
 
-**Alternative:** Run the setup script for instructions:
-```bash
-cd python-agents
-python setup_database.py
-```
+---
 
-### Step 4: Install Python Dependencies
+## 🛠️ Developer Quick Start (Local)
 
-```bash
-cd python-agents
+See [QUICKSTART.md](QUICKSTART.md) for a concise, copy-paste oriented guide.
 
-# Create virtual environment
-python -m venv venv
+Key steps:
 
-# Activate it
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+1. Clone and create `.env`  
+2. Run Supabase migrations  
+3. Start backend: `python-agents/main.py`  
+4. Start frontend: `nextjs-app` → `npm run dev`  
+5. Visit `http://localhost:3000` and generate content  
 
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### Step 5: Install Next.js Dependencies
-
-```bash
-cd ../nextjs-app
-npm install
-```
-
-### Step 6: Start the Application
-
-**Terminal 1 - Start Python Backend:**
-```bash
-cd python-agents
-source venv/bin/activate
-python main.py
-```
-
-You should see: `INFO: Uvicorn running on http://0.0.0.0:8000`
-
-**Terminal 2 - Start Next.js Frontend:**
-```bash
-cd nextjs-app
-npm run dev
-```
-
-You should see: `Ready - started server on 0.0.0.0:3000`
-
-### Step 7: Use the Application
-
-1. Open [http://localhost:3000](http://localhost:3000)
-2. Click **"Generate Content"**
-3. Enter your PRD and topic
-4. Click **"Generate Blog Post"**
-5. Wait for generation (2-5 minutes)
-6. View the timeline to see the complete process!
-
-## 🔄 Workflow
-
-The pipeline follows this flow:
-
-```
-PRD → Researcher → Writer → Fact-Checker → (pass: Polisher, fail: Writer) → Final Blog Post
-```
-
-1. **Researcher**: Uses SerpAPI to research the topic and gather information
-2. **Writer**: Creates blog post draft from PRD and research data
-3. **Fact-Checker**: Verifies claims against research (loops back to writer if fails, max 3 iterations)
-4. **Polisher**: Refines and polishes the final content for publication
-
-## 📊 Database Schema
-
-### `agent_logs` Table
-- `id` (BIGSERIAL, PRIMARY KEY)
-- `agent` (TEXT) - Agent name (researcher, writer, fact_checker, polisher)
-- `input` (TEXT) - Agent input
-- `output` (TEXT) - Agent output
-- `timestamp` (TIMESTAMPTZ) - When the log was created
-- `metadata` (JSONB) - Additional metrics and data
-- `post_id` (BIGINT) - Links logs to posts
-
-### `posts` Table
-- `id` (BIGSERIAL, PRIMARY KEY)
-- `prd` (TEXT) - Product Requirements Document
-- `final_post` (TEXT) - Final polished blog post
-
-## 🧪 Testing
-
-Test the workflow programmatically:
+To test the workflow without the UI:
 
 ```bash
 cd python-agents
@@ -224,167 +219,145 @@ source venv/bin/activate
 python test_workflow.py
 ```
 
-Or use the helper script:
+---
+
+## ☁️ Deployment Guide (Summary)
+
+### Backend (Fly.io)
+
+From `python-agents/`:
+
+```bash
+flyctl launch
+
+flyctl secrets set \
+  SUPABASE_URL="https://your-project.supabase.co" \
+  SUPABASE_KEY="your_supabase_service_role_key" \
+  OPENAI_API_KEY="your_openai_api_key" \
+  SERPAPI_API_KEY="your_serpapi_api_key" \
+  LLM_MODEL="gpt-4o-mini" \
+  LLM_TEMPERATURE="0.7" \
+  ENVIRONMENT="production"
+
+flyctl deploy
+```
+
+Your backend will be available at:
+
+```text
+https://your-fly-app-name.fly.dev
+```
+
+### Frontend (Vercel)
+
+When importing the repo into Vercel:
+
+- **Root Directory**: `nextjs-app`  
+- **Framework Preset**: Next.js  
+
+Set these environment variables (Production):
+
+```ini
+FASTAPI_URL=https://your-fly-app-name.fly.dev
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your_supabase_service_role_key
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_KEY=your_supabase_anon_or_publishable_key
+DEMO_PASSWORD=some_demo_password   # Optional: protects live demo
+```
+
+Vercel will build and deploy the frontend; the app will call your Fly.io backend.
+
+---
+
+## 📊 Database Schema (Supabase)
+
+### `agent_logs`
+
+Stores logs from every agent step in the workflow.
+
+- `id` (BIGSERIAL, PK)  
+- `agent` (TEXT) – `researcher`, `writer`, `fact_checker`, `polisher`  
+- `input` (TEXT) – Agent input  
+- `output` (TEXT) – Agent output  
+- `timestamp` (TIMESTAMPTZ) – When the log was created  
+- `metadata` (JSONB) – Timing, word counts, status, etc.  
+- `post_id` (BIGINT) – Foreign-key-style link to `posts.id`  
+
+### `posts`
+
+Stores PRDs and final polished posts.
+
+- `id` (BIGSERIAL, PK)  
+- `prd` (TEXT) – Original PRD text  
+- `final_post` (TEXT) – Final blog post after polishing  
+
+Full definitions are in `python-agents/migrations/`.
+
+---
+
+## 🧭 Workflow Diagram
+
+```text
+PRD
+ ↓
+Research Agent
+ ↓
+Writer Agent
+ ↓
+Fact-Checker Agent (retry loop up to 3)
+ ↓
+Polisher Agent
+ ↓
+Final Post + Supabase Logs + Timeline View
+```
+
+The Fact-Checker can route back to the Writer up to a max number of iterations to improve factual accuracy.
+
+---
+
+## 🧪 Testing
+
+From `python-agents/`:
+
+```bash
+source venv/bin/activate
+python test_workflow.py
+```
+
+Or run:
+
 ```bash
 ./run_test.sh
 ```
 
-## 🔌 API Endpoints
+This executes the LangGraph workflow end-to-end and logs results to Supabase.
 
-### FastAPI Backend (`http://localhost:8000`)
-
-- `GET /` - API info
-- `GET /health` - Health check
-- `POST /generate` - Generate blog post
-  ```json
-  {
-    "prd": "Product Requirements Document...",
-    "topic": "Blog post topic",
-    "target_length": 1000,
-    "style": "professional"
-  }
-  ```
-
-### Next.js API Routes (`http://localhost:3000/api`)
-
-- `GET /api/posts` - List all posts
-- `GET /api/timeline/[postId]` - Get timeline for a post
-- `POST /api/generate` - Generate content (proxies to FastAPI)
-
-## 🎨 Frontend Pages
-
-- `/` - Home page with navigation
-- `/generate` - Generate new blog post form
-- `/posts` - List all generated posts
-- `/timeline/[postId]` - Visual timeline of generation process
-
-## 🛠️ Troubleshooting
-
-### Database Issues
-
-**No entries in `posts` table:**
-- Check RLS policies in Supabase Dashboard → Table Editor → Policies
-- Ensure INSERT policy allows your service role key
-- Or temporarily disable RLS for testing
-
-**Agent logs not appearing in timeline:**
-- Verify `post_id` column exists: Run `python verify_migration.py`
-- Check that logs have `post_id` set: Run `python check_logs.py`
-- Ensure you're viewing a post created after running migration 003
-
-### API Issues
-
-**401 Unauthorized from SerpAPI:**
-- Verify your `SERPAPI_API_KEY` is correct in `.env`
-- Check your SerpAPI account has credits
-
-**OpenAI errors:**
-- Verify `OPENAI_API_KEY` is correct
-- Check you have sufficient API credits
-- Verify `LLM_MODEL` is a valid model name
-
-**FastAPI server not starting:**
-- Ensure virtual environment is activated
-- Check all dependencies are installed: `pip install -r requirements.txt`
-- Verify `.env` file exists in project root
-
-**Next.js can't connect to FastAPI:**
-- Ensure FastAPI server is running on port 8000
-- Check `FASTAPI_URL` in `.env` matches your FastAPI server URL
-- Verify CORS is enabled in FastAPI (it is by default)
-
-### Workflow Issues
-
-**Content too short:**
-- Increase `target_length` parameter
-- Check writer agent is receiving proper PRD
-
-**Fact-checker always fails:**
-- May indicate insufficient research data
-- Check SerpAPI is returning results
-- Review fact-checker logs in Supabase
-
-**Infinite loops:**
-- The fact-checker has a max iteration limit (3) to prevent infinite loops
-- After 3 failures, workflow proceeds to polish anyway
-
-## 📝 Development
-
-### Project Scripts
-
-**Python:**
-- `python main.py` - Start FastAPI server
-- `python test_workflow.py` - Test workflow
-- `python setup_database.py` - Database setup helper
-- `python check_logs.py` - Debug agent logs
-- `python verify_migration.py` - Verify migrations
-
-**Next.js:**
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-
-### Code Structure
-
-- **Agents** (`python-agents/agents/`): Each agent is a class with `run()` and `run_async()` methods
-- **Workflow** (`python-agents/graph.py`): Defines the LangGraph workflow and state
-- **API** (`python-agents/main.py`): FastAPI endpoints
-- **Frontend** (`nextjs-app/app/`): Next.js App Router pages and API routes
-
-## 🔒 Security Notes
-
-- **Never commit `.env` files** - They're in `.gitignore`
-- Use your own Supabase project - don't share credentials
-- For production, adjust RLS policies in Supabase
-- Consider using service role key for backend, anon key for frontend
-- Rotate API keys if they were ever exposed
+---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License – see [`LICENSE`](LICENSE) for details.
 
-## 🤝 Contributing
+---
 
-Contributions welcome! Please feel free to submit a Pull Request.
+## 👤 Contributing
 
-## 🚀 Deployment
+Contributions are welcome:
 
-The application is configured for deployment to:
-- **Frontend** (example): `https://multi-agent-content-pipeline.vercel.app` (Vercel, Next.js)
-- **Backend** (example): `https://multi-agent-pipeline-api.fly.dev` (Fly.io, FastAPI)
+- Open an issue to discuss ideas or bugs  
+- Submit a PR for improvements (docs, code, tests, UX, etc.)  
 
-You should **replace these with your own domains** when you deploy, but the steps are:
+---
 
-- **Vercel (frontend)**  
-  - Connect this GitHub repo and use `nextjs-app/` as the project root  
-  - Set these environment variables in Vercel (Production):
-    - `FASTAPI_URL=https://your-fly-backend-url.fly.dev`
-    - `SUPABASE_URL=https://your-project-id.supabase.co`
-    - `SUPABASE_KEY=your_supabase_service_role_key` (secret; server-side only)
-    - `NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co`
-    - `NEXT_PUBLIC_SUPABASE_KEY=your_supabase_anon_or_publishable_key`
+## 📝 Summary for Employers
 
-- **Fly.io (backend)**  
-  - Use `python-agents/` as the app root with the included `Dockerfile` and `fly.toml`  
-  - Set these secrets with `flyctl secrets set`:
-    - `SUPABASE_URL=https://your-project-id.supabase.co`
-    - `SUPABASE_KEY=your_supabase_service_role_key`
-    - `OPENAI_API_KEY=your_openai_api_key`
-    - `SERPAPI_API_KEY=your_serpapi_api_key`
-    - `LLM_MODEL=gpt-4o-mini`
-    - `LLM_TEMPERATURE=0.7`
-    - `ENVIRONMENT=production`
+To evaluate this project:
 
-Essential configuration files are included; you mainly need to:
-1. Create your own Supabase project and run the migrations  
-2. Deploy the backend to Fly.io and note its URL  
-3. Deploy the frontend to Vercel and point `FASTAPI_URL` at your Fly.io URL  
+1. Visit the live demo URL  
+2. Use the provided demo password to log in  
+3. Paste in a PRD and generate content  
+4. Inspect the multi-agent timeline and generated post  
+5. Browse this repository to review architecture, code quality, and deployment setup  
 
-## 📚 Additional Resources
-
-- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
-- [Supabase Documentation](https://supabase.com/docs)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Fly.io Documentation](https://fly.io/docs/)
-- [Vercel Documentation](https://vercel.com/docs)
+No local setup is required to see the system in action.  
