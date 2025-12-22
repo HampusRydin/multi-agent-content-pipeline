@@ -12,8 +12,19 @@ export async function GET(
     const { postId } = await params;
     
     if (!SUPABASE_URL || !SUPABASE_KEY) {
+      console.error('Supabase credentials missing:', {
+        hasUrl: !!SUPABASE_URL,
+        hasKey: !!SUPABASE_KEY,
+        envPublicUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        envUrl: !!process.env.SUPABASE_URL,
+        envPublicKey: !!process.env.NEXT_PUBLIC_SUPABASE_KEY,
+        envKey: !!process.env.SUPABASE_KEY
+      });
       return NextResponse.json(
-        { error: 'Supabase credentials not configured' },
+        { error: 'Supabase credentials not configured', debug: {
+          hasUrl: !!SUPABASE_URL,
+          hasKey: !!SUPABASE_KEY
+        }},
         { status: 500 }
       );
     }
@@ -28,8 +39,9 @@ export async function GET(
       .single();
 
     if (postError || !post) {
+      console.error('Post fetch error:', postError);
       return NextResponse.json(
-        { error: 'Post not found' },
+        { error: 'Post not found', details: postError?.message },
         { status: 404 }
       );
     }
@@ -44,8 +56,9 @@ export async function GET(
       .order('timestamp', { ascending: true });
 
     if (logsError) {
+      console.error('Agent logs fetch error:', logsError);
       return NextResponse.json(
-        { error: 'Failed to fetch agent logs' },
+        { error: 'Failed to fetch agent logs', details: logsError?.message },
         { status: 500 }
       );
     }

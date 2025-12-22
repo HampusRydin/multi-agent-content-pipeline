@@ -42,7 +42,8 @@ export default function TimelinePage() {
       try {
         const response = await fetch(`/api/timeline/${postId}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch timeline data');
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `Failed to fetch timeline data (${response.status})`);
         }
         const timelineData = await response.json();
         setData(timelineData);
