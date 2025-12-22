@@ -36,6 +36,7 @@ export default function TimelinePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function fetchTimeline() {
@@ -73,6 +74,16 @@ export default function TimelinePage() {
     });
   };
 
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   const formatTimestamp = (timestamp: string) => {
     return new Date(timestamp).toLocaleString();
   };
@@ -100,10 +111,10 @@ export default function TimelinePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading timeline...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-400">Loading timeline...</p>
         </div>
       </div>
     );
@@ -111,9 +122,9 @@ export default function TimelinePage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 dark:text-red-400">Error: {error || 'Failed to load timeline'}</p>
+          <p className="text-red-400">Error: {error || 'Failed to load timeline'}</p>
         </div>
       </div>
     );
@@ -128,36 +139,36 @@ export default function TimelinePage() {
   const polisherLogs = logs.filter(log => log.agent === 'polisher');
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2">
             Content Generation Timeline
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-400">
             Post ID: {postId}
           </p>
         </div>
 
         {/* PRD Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-              <span className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold mr-3">
+            <h2 className="text-xl font-semibold text-white flex items-center">
+              <span className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
                 0
               </span>
               Product Requirements Document (PRD)
             </h2>
             <button
               onClick={() => toggleSection('prd')}
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              className="text-blue-400 hover:text-blue-300 transition-colors"
             >
               {expandedSections.has('prd') ? 'Collapse' : 'Expand'}
             </button>
           </div>
           {expandedSections.has('prd') && (
-            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 font-mono">
+            <div className="mt-4 p-4 bg-black border border-gray-800 rounded-lg">
+              <pre className="whitespace-pre-wrap text-sm text-gray-200 font-mono">
                 {post.prd}
               </pre>
             </div>
@@ -166,8 +177,8 @@ export default function TimelinePage() {
 
         {/* Warning Message */}
         {warning && (
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
+          <div className="bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 mb-6">
+            <p className="text-sm text-yellow-200">
               ⚠️ {warning}
             </p>
           </div>
@@ -175,8 +186,8 @@ export default function TimelinePage() {
 
         {/* Timeline */}
         {logs.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
+          <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-lg p-8 text-center">
+            <p className="text-gray-400">
               No agent logs found for this post. The logs may not be linked to this post, or the workflow may not have completed.
             </p>
           </div>
@@ -188,37 +199,37 @@ export default function TimelinePage() {
             const isExpanded = expandedSections.has(log.id.toString());
             
             return (
-              <div key={log.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <div key={log.id} className="bg-gray-900 border border-gray-700 rounded-lg shadow-lg p-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center text-green-600 dark:text-green-300 font-bold">
+                    <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
                       {idx + 1}
                     </div>
-                    <div className="w-0.5 h-full bg-gray-200 dark:bg-gray-700 mx-auto mt-2" style={{ minHeight: '40px' }}></div>
+                    <div className="w-0.5 h-full bg-gray-700 mx-auto mt-2" style={{ minHeight: '40px' }}></div>
                   </div>
                   <div className="ml-4 flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-lg font-semibold text-white">
                         Researcher Output
                       </h3>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-400">
                         {formatTimestamp(log.timestamp)}
                       </span>
                     </div>
                     {researchData ? (
                       <div className="space-y-3">
                         <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <p className="text-sm font-medium text-gray-300 mb-2">
                             Findings: {researchData.findings?.length || 0}
                           </p>
                           {isExpanded ? (
                             <div className="space-y-2">
                               {researchData.findings?.slice(0, 10).map((finding: any, i: number) => (
-                                <div key={i} className="p-3 bg-gray-50 dark:bg-gray-700 rounded">
-                                  <p className="font-medium text-sm text-gray-900 dark:text-white">{finding.title}</p>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{finding.snippet}</p>
+                                <div key={i} className="p-3 bg-black border border-gray-800 rounded">
+                                  <p className="font-medium text-sm text-white">{finding.title}</p>
+                                  <p className="text-sm text-gray-400 mt-1">{finding.snippet}</p>
                                   {finding.source && (
-                                    <a href={finding.source} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 dark:text-blue-400 mt-1 block">
+                                    <a href={finding.source} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:text-blue-300 mt-1 block">
                                       {finding.source}
                                     </a>
                                   )}
@@ -226,20 +237,20 @@ export default function TimelinePage() {
                               ))}
                             </div>
                           ) : (
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-sm text-gray-400">
                               {researchData.key_points?.slice(0, 3).join(' • ') || 'No key points available'}
                             </p>
                           )}
                         </div>
                         <button
                           onClick={() => toggleSection(log.id.toString())}
-                          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                          className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
                         >
                           {isExpanded ? 'Show less' : 'Show all findings'}
                         </button>
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{log.output}</p>
+                      <p className="text-sm text-gray-400">{log.output}</p>
                     )}
                   </div>
                 </div>
@@ -254,42 +265,42 @@ export default function TimelinePage() {
             const wordCount = log.output.split(/\s+/).length;
             
             return (
-              <div key={log.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <div key={log.id} className="bg-gray-900 border border-gray-700 rounded-lg shadow-lg p-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold">
+                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                       {researcherLogs.length + idx + 1}
                     </div>
                     {idx < writerLogs.length - 1 && (
-                      <div className="w-0.5 h-full bg-gray-200 dark:bg-gray-700 mx-auto mt-2" style={{ minHeight: '40px' }}></div>
+                      <div className="w-0.5 h-full bg-gray-700 mx-auto mt-2" style={{ minHeight: '40px' }}></div>
                     )}
                   </div>
                   <div className="ml-4 flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-lg font-semibold text-white">
                         Writer Draft {writerLogs.length > 1 && `(Iteration ${iteration})`}
                       </h3>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-400">
                         {formatTimestamp(log.timestamp)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    <p className="text-sm text-gray-400 mb-3">
                       {wordCount} words
                     </p>
-                    <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="p-4 bg-black border border-gray-800 rounded-lg">
                       {isExpanded ? (
-                        <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        <p className="text-sm text-gray-200 whitespace-pre-wrap">
                           {log.output}
                         </p>
                       ) : (
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <p className="text-sm text-gray-200">
                           {truncateText(log.output, 300)}
                         </p>
                       )}
                     </div>
                     <button
                       onClick={() => toggleSection(log.id.toString())}
-                      className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                      className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
                     >
                       {isExpanded ? 'Show less' : 'Show full draft'}
                     </button>
@@ -308,42 +319,42 @@ export default function TimelinePage() {
             const isPass = status === 'pass';
             
             return (
-              <div key={log.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <div key={log.id} className="bg-gray-900 border border-gray-700 rounded-lg shadow-lg p-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className={`w-10 h-10 ${isPass ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'} rounded-full flex items-center justify-center ${isPass ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'} font-bold`}>
+                    <div className={`w-10 h-10 ${isPass ? 'bg-green-600' : 'bg-red-600'} rounded-full flex items-center justify-center text-white font-bold`}>
                       {researcherLogs.length + writerLogs.length + idx + 1}
                     </div>
                     {idx < factCheckerLogs.length - 1 && (
-                      <div className="w-0.5 h-full bg-gray-200 dark:bg-gray-700 mx-auto mt-2" style={{ minHeight: '40px' }}></div>
+                      <div className="w-0.5 h-full bg-gray-700 mx-auto mt-2" style={{ minHeight: '40px' }}></div>
                     )}
                   </div>
                   <div className="ml-4 flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-lg font-semibold text-white">
                         Fact-Checker Result {factCheckerLogs.length > 1 && `(Iteration ${iteration})`}
                       </h3>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-400">
                         {formatTimestamp(log.timestamp)}
                       </span>
                     </div>
                     <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium mb-3 ${
                       isPass 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' 
-                        : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-red-600 text-white'
                     }`}>
                       {isPass ? '✓ Passed' : '✗ Failed'}
                     </div>
                     {factCheckData.issues.length > 0 && (
                       <div className="mt-3">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <p className="text-sm font-medium text-gray-300 mb-2">
                           Issues Found: {factCheckData.issues.length}
                         </p>
                         {isExpanded && (
                           <div className="space-y-2">
                             {factCheckData.issues.map((issue: any, i: number) => (
-                              <div key={i} className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
-                                <p className="text-sm text-gray-700 dark:text-gray-300">
+                              <div key={i} className="p-3 bg-yellow-900/30 rounded border border-yellow-700">
+                                <p className="text-sm text-gray-200">
                                   {typeof issue === 'string' ? issue : issue.description || JSON.stringify(issue)}
                                 </p>
                               </div>
@@ -352,15 +363,15 @@ export default function TimelinePage() {
                         )}
                         <button
                           onClick={() => toggleSection(log.id.toString())}
-                          className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                          className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
                         >
                           {isExpanded ? 'Hide issues' : 'Show all issues'}
                         </button>
                       </div>
                     )}
                     {factCheckData.verificationSummary && (
-                      <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded">
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                      <div className="mt-3 p-3 bg-black border border-gray-800 rounded">
+                        <p className="text-sm text-gray-200">
                           {factCheckData.verificationSummary}
                         </p>
                       </div>
@@ -377,39 +388,39 @@ export default function TimelinePage() {
             const wordCount = log.output.split(/\s+/).length;
             
             return (
-              <div key={log.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <div key={log.id} className="bg-gray-900 border border-gray-700 rounded-lg shadow-lg p-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold">
+                    <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
                       {researcherLogs.length + writerLogs.length + factCheckerLogs.length + idx + 1}
                     </div>
                   </div>
                   <div className="ml-4 flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-lg font-semibold text-white">
                         Style-Polisher Output
                       </h3>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-400">
                         {formatTimestamp(log.timestamp)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    <p className="text-sm text-gray-400 mb-3">
                       {wordCount} words
                     </p>
-                    <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="p-4 bg-black border border-gray-800 rounded-lg">
                       {isExpanded ? (
-                        <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        <p className="text-sm text-gray-200 whitespace-pre-wrap">
                           {log.output}
                         </p>
                       ) : (
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <p className="text-sm text-gray-200">
                           {truncateText(log.output, 300)}
                         </p>
                       )}
                     </div>
                     <button
                       onClick={() => toggleSection(log.id.toString())}
-                      className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                      className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
                     >
                       {isExpanded ? 'Show less' : 'Show full polished post'}
                     </button>
@@ -420,24 +431,46 @@ export default function TimelinePage() {
           })}
 
           {/* Final Post */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-8 border-2 border-green-200 dark:border-green-800">
+          <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-lg p-6 mt-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                <span className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center text-green-600 dark:text-green-300 font-bold mr-3">
+              <h2 className="text-xl font-semibold text-white flex items-center">
+                <span className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
                   ✓
                 </span>
                 Final Polished Blog Post
               </h2>
-              <button
-                onClick={() => toggleSection('final')}
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                {expandedSections.has('final') ? 'Collapse' : 'Expand'}
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => copyToClipboard(post.final_post)}
+                  className="px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white text-sm rounded-md transition-colors flex items-center gap-2"
+                >
+                  {copied ? (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      Copy
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => toggleSection('final')}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {expandedSections.has('final') ? 'Collapse' : 'Expand'}
+                </button>
+              </div>
             </div>
             {expandedSections.has('final') && (
-              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+              <div className="mt-4 p-4 bg-black border border-gray-800 rounded-lg">
+                <p className="text-sm text-gray-200 whitespace-pre-wrap">
                   {post.final_post}
                 </p>
               </div>
