@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -29,8 +30,14 @@ export default function LoginPage() {
         return;
       }
 
-      // On success, redirect to generate page
-      router.push('/generate');
+      // Get the redirect destination from query params, default to /generate
+      const redirectTo = searchParams.get('from') || '/generate';
+      
+      // Use window.location.href for a full page reload to ensure cookie is recognized
+      // Small delay to ensure cookie is set
+      setTimeout(() => {
+        window.location.href = redirectTo;
+      }, 100);
     } catch (err) {
       setError('Something went wrong. Please try again.');
       setLoading(false);
