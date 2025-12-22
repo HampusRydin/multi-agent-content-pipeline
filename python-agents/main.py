@@ -23,13 +23,47 @@ else:
     print("Warning: Supabase credentials not found. Posts will not be saved.")
 
 # Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Allow localhost for development, specific origins for production
+allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+]
+
+# Add Vercel URL from environment variable if set
+vercel_url = os.getenv("VERCEL_URL")
+if vercel_url:
+    # Vercel provides URL without protocol, add https
+    if not vercel_url.startswith("http"):
+        vercel_url = f"https://{vercel_url}"
+    allowed_origins.append(vercel_url)
+
+# Also check for explicit NEXT_PUBLIC_VERCEL_URL
+nextjs_url = os.getenv("NEXT_PUBLIC_VERCEL_URL")
+if nextjs_url:
+    if not nextjs_url.startswith("http"):
+        nextjs_url = f"https://{nextjs_url}"
+    allowed_origins.append(nextjs_url)
+
+# In production, use specific origins; in development, allow all
+environment = os.getenv("ENVIRONMENT", os.getenv("FLY_APP_NAME", "development"))
+if environment == "production" or os.getenv("FLY_APP_NAME"):
+    # Production: restrict to allowed origins
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    # Development: allow all origins
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Initialize the async workflow
 workflow = create_workflow_async()

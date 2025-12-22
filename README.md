@@ -328,9 +328,19 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 Contributions welcome! Please feel free to submit a Pull Request.
 
+## 🚀 Deployment
+
+The application is configured for deployment to:
+- **Frontend**: Vercel (Next.js) - configured via `nextjs-app/`
+- **Backend**: Fly.io (FastAPI) - configured via `python-agents/fly.toml` and `Dockerfile`
+
+Essential configuration files are included. Set environment variables in your deployment platform and run Supabase migrations before deploying.
+
 ## 📚 Additional Resources
 
 - [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
 - [Supabase Documentation](https://supabase.com/docs)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [Fly.io Documentation](https://fly.io/docs/)
+- [Vercel Documentation](https://vercel.com/docs)
