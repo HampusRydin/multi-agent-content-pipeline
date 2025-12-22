@@ -14,8 +14,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Ensure FASTAPI_URL doesn't have trailing slash
+    const apiUrl = FASTAPI_URL.replace(/\/$/, '');
+    const generateUrl = `${apiUrl}/generate`;
+
     // Call the Python FastAPI server
-    const response = await fetch(`${FASTAPI_URL}/generate`, {
+    const response = await fetch(generateUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,8 +34,13 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const error = await response.text();
+      console.error('FastAPI error:', {
+        url: generateUrl,
+        status: response.status,
+        error: error
+      });
       return NextResponse.json(
-        { error: `FastAPI server error: ${error}` },
+        { error: `FastAPI server error: ${error}`, url: generateUrl },
         { status: response.status }
       );
     }
