@@ -24,9 +24,8 @@ export default function Home() {
         <div className="mt-8 grid gap-6 md:grid-cols-2 w-full max-w-2xl">
           <Link
             href="/posts"
-            className="flex flex-col h-48 items-center justify-center rounded-lg bg-gray-900 border-2 border-gray-700 p-6 transition-all hover:border-blue-500 hover:shadow-lg"
+            className="flex flex-col h-48 items-center justify-center rounded-lg bg-gray-900 border-2 border-gray-700 p-6 transition-all hover:border-blue-500 hover:shadow-lg hover:bg-gray-800"
           >
-            <div className="text-4xl mb-4">📋</div>
             <h2 className="text-xl font-semibold text-white mb-2">
               View Posts
             </h2>
@@ -37,9 +36,8 @@ export default function Home() {
           
           <Link
             href="/generate"
-            className="flex flex-col h-48 items-center justify-center rounded-lg bg-gray-900 border-2 border-gray-700 p-6 transition-all hover:border-blue-500 hover:shadow-lg"
+            className="flex flex-col h-48 items-center justify-center rounded-lg bg-gray-900 border-2 border-gray-700 p-6 transition-all hover:border-blue-500 hover:shadow-lg hover:bg-gray-800"
           >
-            <div className="text-4xl mb-4">🚀</div>
             <h2 className="text-xl font-semibold text-white mb-2">
               Generate Content
             </h2>

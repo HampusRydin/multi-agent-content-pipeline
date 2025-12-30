@@ -6,13 +6,13 @@ This project turns a **Product Requirements Document (PRD)** into a polished, fa
 
 Agents and core components:
 
-- 🧠 **Research Agent** – Uses SerpAPI for web research  
-- ✍️ **Writer Agent** – Drafts the article from PRD + research  
-- 🔍 **Fact-Checker Agent** – Iteratively validates claims, can loop back to writer  
-- 🎨 **Polisher Agent** – Refines tone, clarity, and style  
-- 🧩 **LangGraph** – Orchestrates the multi-agent workflow and loops  
-- 📊 **Supabase** – Stores posts and detailed agent logs  
-- 🌐 **Next.js UI** – Timeline view of the entire generation process  
+- **Research Agent** – Uses SerpAPI for web research  
+- **Writer Agent** – Drafts the article from PRD + research  
+- **Fact-Checker Agent** – Iteratively validates claims, can loop back to writer  
+- **Polisher Agent** – Refines tone, clarity, and style  
+- **LangGraph** – Orchestrates the multi-agent workflow and loops  
+- **Supabase** – Stores posts and detailed agent logs  
+- **Next.js UI** – Timeline view of the entire generation process  
 
 Deployed as:
 
@@ -22,15 +22,15 @@ Deployed as:
 
 ---
 
-## 🚀 Live Demo
+## Live Demo
 
-👉 **Frontend:**  
+**Frontend:**  
 `https://multi-agent-content-pipeline.vercel.app`
 
-👉 **Backend (reference only):**  
+**Backend (reference only):**  
 `https://multi-agent-pipeline-api.fly.dev`
 
-### 🔐 Access Notice
+### Access Notice
 
 The live demo is **password-protected** to prevent abuse of API credits.
 
@@ -44,17 +44,17 @@ The live demo is **password-protected** to prevent abuse of API credits.
 
 ---
 
-## 🎯 What This Project Demonstrates (For Employers)
+## What This Project Demonstrates (For Employers)
 
 This repository showcases a complete, production-style AI engineering system:
 
-- ✔ Multi-agent orchestration with LangGraph  
-- ✔ End-to-end architecture (Next.js frontend + FastAPI backend)  
-- ✔ Cloud-native deployment (Vercel + Fly.io + Supabase)  
-- ✔ Secure secrets management and environment setup  
-- ✔ Supabase integration with structured logging (`agent_logs`, `posts`)  
-- ✔ Timeline UI to visualize agent steps and iterations  
-- ✔ Clean, modular code structure suitable for extension  
+- Multi-agent orchestration with LangGraph  
+- End-to-end architecture (Next.js frontend + FastAPI backend)  
+- Cloud-native deployment (Vercel + Fly.io + Supabase)  
+- Secure secrets management and environment setup  
+- Supabase integration with structured logging (`agent_logs`, `posts`)  
+- Timeline UI to visualize agent steps and iterations  
+- Clean, modular code structure suitable for extension  
 
 You can:
 - Use the live demo to see the workflow end-to-end  
@@ -62,7 +62,7 @@ You can:
 
 ---
 
-## ⚙️ Architecture Overview
+## Architecture Overview
 
 - **Frontend:** Next.js (App Router), TypeScript, Tailwind-style utility classes  
 - **Backend:** FastAPI + LangGraph (Python)  
@@ -81,7 +81,7 @@ The UI exposes:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 multi-agent-content-pipeline/
@@ -112,9 +112,9 @@ multi-agent-content-pipeline/
 
 ---
 
-## 💡 Using the Project: Demo vs. Self-Hosting
+## Using the Project: Demo vs. Self-Hosting
 
-### ✔ Live Demo (Recommended for Employers)
+### Live Demo (Recommended for Employers)
 
 - Open: `https://multi-agent-content-pipeline.vercel.app`  
 - Enter the **demo password** on the `/login` page  
@@ -125,7 +125,7 @@ You don’t need to:
 - Set up `.env`  
 - Deploy anything  
 
-### ✔ Self-Hosting (For Developers)
+### Self-Hosting (For Developers)
 
 To run your **own** copy (with your own API keys and quotas):
 
@@ -186,7 +186,7 @@ To run your **own** copy (with your own API keys and quotas):
 
 ---
 
-## 🔐 Security Notes
+## Security Notes
 
 - `.env` and keys are **never** committed to Git (see `.gitignore`).  
 - Supabase **service role key** is used only on:
@@ -199,7 +199,7 @@ To run your **own** copy (with your own API keys and quotas):
 
 ---
 
-## 🛠️ Developer Quick Start (Local)
+## Developer Quick Start (Local)
 
 Key steps:
 
@@ -219,7 +219,7 @@ python test_workflow.py
 
 ---
 
-## ☁️ Deployment Guide (Summary)
+## Deployment Guide (Summary)
 
 ### Backend (Fly.io)
 
@@ -268,7 +268,7 @@ Vercel will build and deploy the frontend; the app will call your Fly.io backend
 
 ---
 
-## 📊 Database Schema (Supabase)
+## Database Schema (Supabase)
 
 ### `agent_logs`
 
@@ -294,7 +294,7 @@ Full definitions are in `python-agents/migrations/`.
 
 ---
 
-## 🧭 Workflow Diagram
+## Workflow Diagram
 
 ```text
 PRD
@@ -314,7 +314,7 @@ The Fact-Checker can route back to the Writer up to a max number of iterations t
 
 ---
 
-## 🧪 Testing
+## Testing
 
 From `python-agents/`:
 
@@ -333,13 +333,13 @@ This executes the LangGraph workflow end-to-end and logs results to Supabase.
 
 ---
 
-## 📄 License
+## License
 
 MIT License – see [`LICENSE`](LICENSE) for details.
 
 ---
 
-## 📝 Summary for Employers
+## Summary for Employers
 
 To evaluate this project:
 

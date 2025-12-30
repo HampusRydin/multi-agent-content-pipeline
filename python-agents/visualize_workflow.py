@@ -15,7 +15,7 @@ def visualize_workflow():
     print("=" * 60)
     
     # Get the graph structure
-    print("\n📊 Workflow Structure:")
+    print("\nWorkflow Structure:")
     print("-" * 60)
     
     # Print the graph (LangGraph provides this)
@@ -67,7 +67,7 @@ Conditional Logic:
     """)
     
     print("=" * 60)
-    print("\n💡 Usage:")
+    print("\nUsage:")
     print("-" * 60)
     print("""
 1. Via FastAPI (recommended):

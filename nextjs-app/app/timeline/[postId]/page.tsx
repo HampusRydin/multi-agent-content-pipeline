@@ -191,7 +191,7 @@ export default function TimelinePage() {
         {warning && (
           <div className="bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 mb-6">
             <p className="text-sm text-yellow-200">
-              ⚠️ {warning}
+              Warning: {warning}
             </p>
           </div>
         )}
