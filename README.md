@@ -44,24 +44,6 @@ The live demo is **password-protected** to prevent abuse of API credits.
 
 ---
 
-## What This Project Demonstrates (For Employers)
-
-This repository showcases a complete, production-style AI engineering system:
-
-- Multi-agent orchestration with LangGraph  
-- End-to-end architecture (Next.js frontend + FastAPI backend)  
-- Cloud-native deployment (Vercel + Fly.io + Supabase)  
-- Secure secrets management and environment setup  
-- Supabase integration with structured logging (`agent_logs`, `posts`)  
-- Timeline UI to visualize agent steps and iterations  
-- Clean, modular code structure suitable for extension  
-
-You can:
-- Use the live demo to see the workflow end-to-end  
-- Browse the code to understand architecture and implementation details  
-
----
-
 ## Architecture Overview
 
 - **Frontend:** Next.js (App Router), TypeScript, Tailwind-style utility classes  
@@ -114,7 +96,7 @@ multi-agent-content-pipeline/
 
 ## Using the Project: Demo vs. Self-Hosting
 
-### Live Demo (Recommended for Employers)
+### Live Demo
 
 - Open: `https://multi-agent-content-pipeline.vercel.app`  
 - Enter the **demo password** on the `/login` page  
@@ -125,7 +107,7 @@ You don’t need to:
 - Set up `.env`  
 - Deploy anything  
 
-### Self-Hosting (For Developers)
+### Self-Hosting
 
 To run your **own** copy (with your own API keys and quotas):
 
