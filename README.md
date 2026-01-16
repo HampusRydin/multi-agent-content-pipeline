@@ -44,7 +44,7 @@ The live demo is **password-protected** to prevent abuse of API credits.
 
 ### Video Demo
 
-[Watch Demo Video](docs/demo-video.mp4)
+<video src="docs/demo-video.mp4" controls width="100%"></video>
 
 *Walkthrough of the multi-agent pipeline generating a blog post from a PRD.*
 
