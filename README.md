@@ -44,7 +44,7 @@ The live demo is **password-protected** to prevent abuse of API credits.
 
 ### Video Demo
 
-<video src="https://github.com/HampusRydin/multi-agent-content-pipeline/raw/main/docs/demo-video.mp4" controls width="100%"></video>
+[Watch Demo Video](https://github.com/HampusRydin/multi-agent-content-pipeline/raw/main/docs/demo-video.mp4)
 
 *Walkthrough of the multi-agent pipeline generating a blog post from a PRD.*
 
