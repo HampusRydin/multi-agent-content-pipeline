@@ -42,6 +42,12 @@ The live demo is **password-protected** to prevent abuse of API credits.
 
 > You do **not** need to install or run anything locally to evaluate the project.
 
+### Video Demo
+
+[Watch Demo Video](docs/demo-video.mp4)
+
+*Walkthrough of the multi-agent pipeline generating a blog post from a PRD.*
+
 ---
 
 ## Architecture Overview
